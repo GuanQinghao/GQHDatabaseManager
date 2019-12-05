@@ -1,0 +1,18 @@
+PODS:
+  - FMDB (2.7.5):
+    - FMDB/standard (= 2.7.5)
+  - FMDB/standard (2.7.5)
+
+DEPENDENCIES:
+  - FMDB
+
+SPEC REPOS:
+  https://github.com/CocoaPods/Specs.git:
+    - FMDB
+
+SPEC CHECKSUMS:
+  FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
+
+PODFILE CHECKSUM: d05c52b6fd8b6d8afdc7234db9de177149639cb3
+
+COCOAPODS: 1.8.4
