@@ -11,70 +11,79 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/// 数据库结构体
+typedef struct _GQHDatabase {
+    
+    NSString *db_path;// 数据库路径
+    NSString *db_name;// 数据库名
+    NSString *db_table;// 数据表名
+    Class db_cls;// 存储的模型类
+} GQHDatabase;
+
+NS_ASSUME_NONNULL_END
+
+
+NS_ASSUME_NONNULL_BEGIN
+
+/// 数据库操作条件结构体
+typedef struct _GQHSQLiteCondition {
+    
+    GQHDatabase db_database;// 数据库结构体
+    NSInteger db_size;// 每页数量
+    NSInteger db_page;// 当前页
+    NSDictionary *db_query;// 查询条件
+} GQHSQLiteCondition;
+
+NS_ASSUME_NONNULL_END
+
+NS_ASSUME_NONNULL_BEGIN
+
 @interface GQHDatabaseManager : NSObject
 
 /// 数据库管理单例
 + (instancetype)qh_sharedDatabaseManager;
 
-//MARK:数据库操作
-/// 创建数据库文件
-/// @param databaseName 数据库文件名
-/// @param path 数据库文件路径
-- (BOOL)qh_createDatabase:(NSString *)databaseName atPath:(nullable NSString *)path;
-
-/// 删除数据库文件(不能删除非空数据库, 先删除数据表再删数据库)
-/// @param databaseName 数据库文件名
-/// @param path 数据库文件路径
-- (BOOL)qh_removeDatabase:(NSString *)databaseName atPath:(nullable NSString *)path;
+/// 创建数据库
+/// @param database 数据库结构体
+- (BOOL)qh_createDatabase:(GQHDatabase)database;
 
 /// 数据库文件路径(Documents文件夹下, 已存在的数据库, 不存在则返回nil)
 /// @param databaseName 数据库文件名
-- (nullable NSString *)qh_pathOfDatabase:(NSString *)databaseName;
+- (nullable NSString *)qh_filePathWithDatabaseName:(NSString *)databaseName;
 
-//MARK:数据表操作
-/// 创建数据表
-/// @param databaseName 数据库文件名
-/// @param tableName 数据表名
-/// @param cls 数据表对应的模型类
-- (BOOL)qh_createTableInDatabase:(NSString *)databaseName withTableName:(NSString *)tableName model:(Class)cls;
+/// 查询数据库所有数据表名称
+/// @param database 数据库结构体
+- (NSArray<NSString *> *)qh_queryAllTableNamesInDatabase:(GQHDatabase)database;
 
-/// 清空数据库中的数据表
-/// @param tableName 数据表名
-/// @param databaseName 数据库文件名
-- (BOOL)qh_truncateTable:(NSString *)tableName inDatabase:(NSString *)databaseName;
+/// 删除数据库(不能删除非空数据库, 先清空数据表, 再删除数据表, 最后删除数据库)
+/// @param database 数据库结构体
+- (BOOL)qh_removeDatabase:(GQHDatabase)database;
 
-/// 删除数据库中的数据表
-/// @param tableName 数据表名
-/// @param databaseName 数据库文件名
-- (BOOL)qh_dropTable:(NSString *)tableName inDatabase:(NSString *)databaseName;
+/// 删除数据表(不能删除非空数据表, 先清空数据表, 再删除数据表)
+/// @param database 数据库结构体
+- (BOOL)qh_dropDatabase:(GQHDatabase)database;
+
+/// 清空数据表
+/// @param database 数据库结构体
+- (BOOL)qh_truncateDatabase:(GQHDatabase)database;
 
 //MARK:CRUD
 /// 插入数据
-/// @param model 数据模型
-/// @param tableName 数据表名
-/// @param databaseName 数据库文件名
-- (BOOL)qh_insertData:(id)model inTable:(NSString *)tableName database:(NSString *)databaseName;
+/// @param model 模型数据
+/// @param database 数据库结构体
+- (BOOL)qh_insertData:(id)model intoDatabase:(GQHDatabase)database;
 
-/// 查询指定属性指定值的数据
-/// @param cls 数据表对应的模型类
-/// @param key 指定属性
-/// @param value 指定值
-/// @param tableName 数据表名
-/// @param databaseName 数据库文件名
-- (NSArray *)qh_queryOneWithClass:(Class)cls key:(NSString *)key value:(NSString *)value inTable:(NSString *)tableName database:(NSString *)databaseName;
+/// 删除数据
+/// @param condition 数据库操作条件结构体
+- (BOOL)qh_deleteDataWith:(GQHSQLiteCondition)condition;
 
-/// 查询数据表中的所有数据
-/// @param cls 数据表对应的模型类
-/// @param tableName 数据表名
-/// @param databaseName 数据库文件名
-- (NSArray *)qh_queryAllWithClass:(Class)cls inTable:(NSString *)tableName database:(NSString *)databaseName;
+/// 查询数据
+/// @param condition 数据库操作条件结构体
+- (NSArray *)qh_queryDataWith:(GQHSQLiteCondition)condition;
 
-/// 删除指定属性指定值的数据
-/// @param key 指定属性
-/// @param value 指定值
-/// @param tableName 数据表名
-/// @param databaseName 数据库文件名
-- (BOOL)qh_deleteDataWithKey:(NSString *)key value:(NSString *)value inTable:(NSString *)tableName database:(NSString *)databaseName;
+///TODO: 模糊查询数据
+/// @param condition 数据库操作条件结构体
+- (NSArray *)qh_fuzzyQueryDataWith:(GQHSQLiteCondition)condition;
 
 @end
 
