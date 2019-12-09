@@ -62,37 +62,35 @@ static GQHDatabaseManager *manager = nil;
     // 数据表对应模型类
     Class dbClass = database.db_cls;
     
-    if (dbName && dbName.length > 0) {
+    if (![self isNonnullString:dbName]) {
         
-        // 数据库文件全路径
-        NSString *databasePath = [self databaseName:dbName atPath:dbPath];
-        NSLog(@"The database file path:%@",databasePath);
+        NSLog(@"%s [%d] [The database name is empty!]", __func__, __LINE__);
+        return success;
+    }
+    
+    // 数据库文件全路径
+    NSString *databasePath = [self databaseName:dbName atPath:dbPath];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:databasePath]) {
         
-        if (![[NSFileManager defaultManager] fileExistsAtPath:databasePath]) {
+        if ([self isNonnullString:dbTable]) {
             
-            // 创建数据库文件
-            if ([[NSFileManager defaultManager] createFileAtPath:databasePath contents:nil attributes:nil]) {
-                
-                // 创建数据表
-                success = [self createDatabaseTable:dbTable withClass:dbClass atPath:databasePath];
-            } else {
-                
-                NSLog(@"%s [%d] [Failed to create a new database file: %@!]", __func__, __LINE__,databasePath);
-            }
+            // 创建数据表
+            success = [self createDatabaseTable:dbTable withClass:dbClass atPath:databasePath];
         } else {
             
-            if (dbTable && dbTable.length > 0) {
-                
-                // 创建数据表
-                success = [self createDatabaseTable:dbTable withClass:dbClass atPath:databasePath];
-            } else {
-                
-                NSLog(@"%s [%d] [The database file already exists: %@!]", __func__, __LINE__,databasePath);
-            }
+            NSLog(@"%s [%d] [The database file already exists: %@!]", __func__, __LINE__,databasePath);
         }
     } else {
         
-        NSLog(@"%s [%d] [The database name is empty!]", __func__, __LINE__);
+        // 创建数据库文件
+        if ([[NSFileManager defaultManager] createFileAtPath:databasePath contents:nil attributes:nil]) {
+            
+            // 创建数据表
+            success = [self createDatabaseTable:dbTable withClass:dbClass atPath:databasePath];
+        } else {
+            
+            NSLog(@"%s [%d] [Failed to create a new database file: %@!]", __func__, __LINE__,databasePath);
+        }
     }
     
     return success;
@@ -103,7 +101,7 @@ static GQHDatabaseManager *manager = nil;
 /// @param path 数据库文件路径
 - (NSString *)databaseName:(NSString *)name atPath:(NSString *)path {
     
-    if (path.length > 0) {
+    if ([self isNonnullString:path]) {
         
         // 是否是文件夹目录
         BOOL isDirectory = false;
@@ -123,6 +121,7 @@ static GQHDatabaseManager *manager = nil;
             // 创建路径成功
             return [path stringByAppendingPathComponent:name];
         }
+        
     }
     
     // 路径为空或创建失败
@@ -139,65 +138,65 @@ static GQHDatabaseManager *manager = nil;
     // 创建数据表是否成功
     __block BOOL success = NO;
     
-    if (tableName && tableName.length > 0) {
-        
-        // 数据库队列
-        self.databaseQueue = [FMDatabaseQueue databaseQueueWithPath:databasePath];
-        [self.databaseQueue inDatabase:^(FMDatabase * _Nonnull db) {
-            
-            if ([db tableExists:tableName]) {
-                
-                // 存在, 检查数据表
-                // 所有字段
-                NSMutableArray *fields = [NSMutableArray array];
-                
-                NSString *fieldsSQL = [NSString stringWithFormat:@"PRAGMA table_info([%@])",tableName];
-                FMResultSet *resultSet = [db executeQuery:fieldsSQL];
-                
-                while ([resultSet next]) {
-                    
-                    [[resultSet resultDictionary] enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
-                        
-                        if ([key isEqualToString:@"name"]) {
-                            
-                            [fields addObject:obj];
-                        }
-                    }];
-                }
-                
-                // 所有属性
-                NSMutableArray *properties = [NSMutableArray array];
-                // 属性个数
-                unsigned int count = 0;
-                // 属性列表
-                objc_property_t *propertyList = class_copyPropertyList([cls class], &count);
-                
-                for (int i = 0; i < count; i++) {
-                    
-                    // 第i个属性
-                    objc_property_t property = propertyList[i];
-                    // 属性名
-                    const char *name = property_getName(property);
-                    // 数据库字段名
-                    NSString *field = [NSString stringWithUTF8String:name];
-                    [properties addObject:field];
-                }
-                
-                // 释放
-                free(propertyList);
-                
-                //TODO:匹配字段
-                success = [fields isEqualToArray:properties];
-            } else {
-                
-                // 不存在, 创建数据表
-                success = [db executeUpdate:[self sql_createTable:tableName model:cls]];
-            }
-        }];
-    } else {
+    if (![self isNonnullString:tableName]) {
         
         NSLog(@"%s [%d] [The database table name is empty: %@!]", __func__, __LINE__,databasePath);
+        return success;
     }
+    
+    // 数据库队列
+    self.databaseQueue = [FMDatabaseQueue databaseQueueWithPath:databasePath];
+    [self.databaseQueue inDatabase:^(FMDatabase * _Nonnull db) {
+        
+        if ([db tableExists:tableName]) {
+            
+            // 存在, 检查数据表
+            // 所有字段
+            NSMutableArray *fields = [NSMutableArray array];
+            
+            NSString *fieldsSQL = [NSString stringWithFormat:@"PRAGMA table_info([%@])",tableName];
+            
+            FMResultSet *resultSet = [db executeQuery:fieldsSQL];
+            while ([resultSet next]) {
+                
+                [[resultSet resultDictionary] enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+                    
+                    if ([key isEqualToString:@"name"]) {
+                        
+                        [fields addObject:obj];
+                    }
+                }];
+            }
+            
+            // 所有属性
+            NSMutableArray *properties = [NSMutableArray array];
+            // 属性个数
+            unsigned int count = 0;
+            // 属性列表
+            objc_property_t *propertyList = class_copyPropertyList([cls class], &count);
+            
+            for (int i = 0; i < count; i++) {
+                
+                // 第i个属性
+                objc_property_t property = propertyList[i];
+                // 属性名
+                const char *name = property_getName(property);
+                // 数据库字段名
+                NSString *field = [NSString stringWithUTF8String:name];
+                [properties addObject:field];
+            }
+            
+            // 释放
+            free(propertyList);
+            
+            //TODO:匹配字段
+            success = [fields isEqualToArray:properties];
+        } else {
+            
+            // 不存在, 创建数据表
+            success = [db executeUpdate:[self sql_createTable:tableName model:cls]];
+        }
+    }];
     
     return success;
 }
@@ -238,7 +237,6 @@ static GQHDatabaseManager *manager = nil;
             
             // 文件夹下的所有文件及文件夹
             NSArray *directoryArray = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:path error:nil];
-            
             for (NSString *name in directoryArray) {
                 
                 // 忽略隐藏的文件或文件夹
@@ -270,37 +268,35 @@ static GQHDatabaseManager *manager = nil;
     // 数据库文件路径
     NSString *dbPath = database.db_path;
     
-    if (dbName && dbName.length > 0) {
-        
-        // 数据库文件全路径
-        NSString *databasePath = [self databaseName:dbName atPath:dbPath];
-        NSLog(@"The database file path:%@",databasePath);
-        
-        if ([[NSFileManager defaultManager] fileExistsAtPath:databasePath]) {
-            
-            // 数据库队列
-            self.databaseQueue = [FMDatabaseQueue databaseQueueWithPath:databasePath];
-            [self.databaseQueue inDatabase:^(FMDatabase * _Nonnull db) {
-                
-                // 查询数据库所有数据表名
-                NSString *tablesSQL = @"SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name;";
-                FMResultSet *resultSet = [db executeQuery: tablesSQL];
-                
-                while ([resultSet next]) {
-                    
-                    [[resultSet resultDictionary] enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
-                        
-                        [tableNames addObject:obj];
-                    }];
-                }
-            }];
-        } else {
-            
-            NSLog(@"%s [%d] [The database file does not exist: %@!]", __func__, __LINE__,databasePath);
-        }
-    } else {
+    if (![self isNonnullString:dbName]) {
         
         NSLog(@"%s [%d] [The database name is empty!]", __func__, __LINE__);
+        return [tableNames copy];
+    }
+    
+    // 数据库文件全路径
+    NSString *databasePath = [self databaseName:dbName atPath:dbPath];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:databasePath]) {
+        
+        // 数据库队列
+        self.databaseQueue = [FMDatabaseQueue databaseQueueWithPath:databasePath];
+        [self.databaseQueue inDatabase:^(FMDatabase * _Nonnull db) {
+            
+            // 查询数据库所有数据表名
+            NSString *tablesSQL = @"SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name;";
+            
+            FMResultSet *resultSet = [db executeQuery: tablesSQL];
+            while ([resultSet next]) {
+                
+                [[resultSet resultDictionary] enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+                    
+                    [tableNames addObject:obj];
+                }];
+            }
+        }];
+    } else {
+        
+        NSLog(@"%s [%d] [The database file does not exist: %@!]", __func__, __LINE__,databasePath);
     }
     
     return [tableNames copy];
@@ -318,33 +314,31 @@ static GQHDatabaseManager *manager = nil;
     // 数据库文件路径
     NSString *dbPath = database.db_path;
     
-    if (dbName && dbName.length > 0) {
+    if (![self isNonnullString:dbName]) {
         
-        // 数据库文件全路径
-        NSString *databasePath = [self databaseName:dbName atPath:dbPath];
-        NSLog(@"The database file path:%@",databasePath);
+        NSLog(@"%s [%d] [The database name is empty!]", __func__, __LINE__);
+        return success;
+    }
+    
+    // 数据库文件全路径
+    NSString *databasePath = [self databaseName:dbName atPath:dbPath];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:databasePath]) {
         
-        if ([[NSFileManager defaultManager] fileExistsAtPath:databasePath]) {
+        // 查询数据库中所有的数据表名
+        NSArray<NSString *> *tableNames = [self qh_queryAllTableNamesInDatabase:database];
+        if (tableNames.count > 0) {
             
-            // 查询数据库中所有的数据表名
-            NSArray<NSString *> *tableNames = [self qh_queryAllTableNamesInDatabase:database];
-            if (tableNames.count > 0) {
-                
-                // 非空数据库
-                NSString *tableNamesString = [tableNames componentsJoinedByString:@", "];
-                NSLog(@"%s [%d] [The database has data table(s): %@!]", __func__, __LINE__,tableNamesString);
-            } else {
-                
-                // 空数据库
-                success = [[NSFileManager defaultManager] removeItemAtPath:databasePath error:nil];
-            }
+            // 非空数据库
+            NSString *tableNamesString = [tableNames componentsJoinedByString:@", "];
+            NSLog(@"%s [%d] [The database has data table(s): %@!]", __func__, __LINE__,tableNamesString);
         } else {
             
-            NSLog(@"%s [%d] [The database file does not exist: %@!]", __func__, __LINE__,databasePath);
+            // 空数据库
+            success = [[NSFileManager defaultManager] removeItemAtPath:databasePath error:nil];
         }
     } else {
         
-        NSLog(@"%s [%d] [The database name is empty!]", __func__, __LINE__);
+        NSLog(@"%s [%d] [The database file does not exist: %@!]", __func__, __LINE__,databasePath);
     }
     
     return success;
@@ -366,60 +360,58 @@ static GQHDatabaseManager *manager = nil;
     // 数据表名
     NSString *dbTable = database.db_table;
     
-    if (dbName && dbName.length > 0) {
+    if (![self isNonnullString:dbName]) {
         
-        // 数据库文件全路径
-        NSString *databasePath = [self databaseName:dbName atPath:dbPath];
-        NSLog(@"The database file path:%@",databasePath);
+        NSLog(@"%s [%d] [The database name is empty!]", __func__, __LINE__);
+        return success;
+    }
+    
+    // 数据库文件全路径
+    NSString *databasePath = [self databaseName:dbName atPath:dbPath];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:databasePath]) {
         
-        if ([[NSFileManager defaultManager] fileExistsAtPath:databasePath]) {
+        if ([self isNonnullString:dbTable]) {
             
-            if (dbTable && dbTable.length > 0) {
+            // 数据库队列
+            self.databaseQueue = [FMDatabaseQueue databaseQueueWithPath:databasePath];
+            [self.databaseQueue inDatabase:^(FMDatabase * _Nonnull db) {
                 
-                // 数据库队列
-                self.databaseQueue = [FMDatabaseQueue databaseQueueWithPath:databasePath];
-                [self.databaseQueue inDatabase:^(FMDatabase * _Nonnull db) {
+                if ([db tableExists:dbTable]) {
                     
-                    if ([db tableExists:dbTable]) {
+                    // 查询数据表记录条数
+                    NSString *countSQL = [NSString stringWithFormat:@"SELECT count(%@) FROM '%@';", kDatabasePrimaryKey,dbTable];
+                    
+                    FMResultSet *resultSet = [db executeQuery:countSQL];
+                    while ([resultSet next]) {
                         
-                        // 查询数据表记录条数
-                        NSString *countSQL = [NSString stringWithFormat:@"SELECT count(%@) FROM '%@';", kDatabasePrimaryKey,dbTable];
-                        FMResultSet *resultSet = [db executeQuery:countSQL];
+                        [[resultSet resultDictionary] enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+                            
+                            empty = !([obj integerValue] > 0);
+                        }];
+                    }
+                    
+                    if (empty) {
                         
-                        while ([resultSet next]) {
-                            
-                            [[resultSet resultDictionary] enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
-                                
-                                empty = !([obj integerValue] > 0);
-                            }];
-                        }
-                        
-                        if (empty) {
-                            
-                            // 删除空数据表
-                            NSString *dropSQL = [NSString stringWithFormat:@"DROP TABLE '%@';", dbTable];
-                            success = [db executeUpdate: dropSQL];
-                        } else {
-                            
-                            // 非空数据表
-                            NSLog(@"%s [%d] [There is data in the data table: %@!]", __func__, __LINE__,dbTable);
-                        }
+                        // 删除空数据表
+                        NSString *dropSQL = [NSString stringWithFormat:@"DROP TABLE '%@';", dbTable];
+                        success = [db executeUpdate: dropSQL];
                     } else {
                         
-                        NSLog(@"%s [%d] [The database table does not exist: %@!]", __func__, __LINE__,dbTable);
+                        // 非空数据表
+                        NSLog(@"%s [%d] [There is data in the data table: %@!]", __func__, __LINE__,dbTable);
                     }
-                }];
-            } else {
-                
-                NSLog(@"%s [%d] [The database table name is empty!]", __func__, __LINE__);
-            }
+                } else {
+                    
+                    NSLog(@"%s [%d] [The database table does not exist: %@!]", __func__, __LINE__,dbTable);
+                }
+            }];
         } else {
             
-            NSLog(@"%s [%d] [The database file does not exist: %@!]", __func__, __LINE__,databasePath);
+            NSLog(@"%s [%d] [The database table name is empty!]", __func__, __LINE__);
         }
     } else {
         
-        NSLog(@"%s [%d] [The database name is empty!]", __func__, __LINE__);
+        NSLog(@"%s [%d] [The database file does not exist: %@!]", __func__, __LINE__,databasePath);
     }
     
     return success;
@@ -439,42 +431,40 @@ static GQHDatabaseManager *manager = nil;
     // 数据表名
     NSString *dbTable = database.db_table;
     
-    if (dbName && dbName.length > 0) {
+    if (![self isNonnullString:dbName]) {
         
-        // 数据库文件全路径
-        NSString *databasePath = [self databaseName:dbName atPath:dbPath];
-        NSLog(@"The database file path:%@",databasePath);
+        NSLog(@"%s [%d] [The database name is empty!]", __func__, __LINE__);
+        return success;
+    }
+    
+    // 数据库文件全路径
+    NSString *databasePath = [self databaseName:dbName atPath:dbPath];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:databasePath]) {
         
-        if ([[NSFileManager defaultManager] fileExistsAtPath:databasePath]) {
+        if ([self isNonnullString:dbTable]) {
             
-            if (dbTable && dbTable.length > 0) {
+            // 数据库队列
+            self.databaseQueue = [FMDatabaseQueue databaseQueueWithPath:databasePath];
+            [self.databaseQueue inDatabase:^(FMDatabase * _Nonnull db) {
                 
-                // 数据库队列
-                self.databaseQueue = [FMDatabaseQueue databaseQueueWithPath:databasePath];
-                [self.databaseQueue inDatabase:^(FMDatabase * _Nonnull db) {
+                if ([db tableExists:dbTable]) {
                     
-                    if ([db tableExists:dbTable]) {
-                        
-                        // 清空数据表
-                        NSString *deleteSQL = [NSString stringWithFormat:@"DELETE FROM '%@';",dbTable];
-                        
-                        success = [db executeUpdate: deleteSQL];
-                    } else {
-                        
-                        NSLog(@"%s [%d] [The database table does not exist: %@!]", __func__, __LINE__,dbTable);
-                    }
-                }];
-            } else {
-                
-                NSLog(@"%s [%d] [The database table name is empty!]", __func__, __LINE__);
-            }
+                    // 清空数据表
+                    NSString *deleteSQL = [NSString stringWithFormat:@"DELETE FROM '%@';",dbTable];
+                    
+                    success = [db executeUpdate: deleteSQL];
+                } else {
+                    
+                    NSLog(@"%s [%d] [The database table does not exist: %@!]", __func__, __LINE__,dbTable);
+                }
+            }];
         } else {
             
-            NSLog(@"%s [%d] [The database file does not exist: %@!]", __func__, __LINE__,databasePath);
+            NSLog(@"%s [%d] [The database table name is empty!]", __func__, __LINE__);
         }
     } else {
         
-        NSLog(@"%s [%d] [The database name is empty!]", __func__, __LINE__);
+        NSLog(@"%s [%d] [The database file does not exist: %@!]", __func__, __LINE__,databasePath);
     }
     
     return success;
@@ -496,40 +486,38 @@ static GQHDatabaseManager *manager = nil;
     // 数据表名
     NSString *dbTable = database.db_table;
     
-    if (dbName && dbName.length > 0) {
+    if (![self isNonnullString:dbName]) {
         
-        // 数据库文件全路径
-        NSString *databasePath = [self databaseName:dbName atPath:dbPath];
-        NSLog(@"The database file path:%@",databasePath);
+        NSLog(@"%s [%d] [The database name is empty!]", __func__, __LINE__);
+        return success;
+    }
+    
+    // 数据库文件全路径
+    NSString *databasePath = [self databaseName:dbName atPath:dbPath];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:databasePath]) {
         
-        if ([[NSFileManager defaultManager] fileExistsAtPath:databasePath]) {
+        if ([self isNonnullString:dbTable]) {
             
-            if (dbTable && dbTable.length > 0) {
+            // 数据库队列
+            self.databaseQueue = [FMDatabaseQueue databaseQueueWithPath:databasePath];
+            [self.databaseQueue inDatabase:^(FMDatabase * _Nonnull db) {
                 
-                // 数据库队列
-                self.databaseQueue = [FMDatabaseQueue databaseQueueWithPath:databasePath];
-                [self.databaseQueue inDatabase:^(FMDatabase * _Nonnull db) {
+                if ([db tableExists:dbTable]) {
                     
-                    if ([db tableExists:dbTable]) {
-                        
-                        // 插入数据
-                        success = [db executeUpdate: [self sql_insertData:model intoTable:dbTable database:dbName]];
-                    } else {
-                        
-                        NSLog(@"%s [%d] [The database table does not exist: %@!]", __func__, __LINE__,dbTable);
-                    }
-                }];
-            } else {
-                
-                NSLog(@"%s [%d] [The database table name is empty!]", __func__, __LINE__);
-            }
+                    // 插入数据
+                    success = [db executeUpdate: [self sql_insertData:model intoTable:dbTable database:dbName]];
+                } else {
+                    
+                    NSLog(@"%s [%d] [The database table does not exist: %@!]", __func__, __LINE__,dbTable);
+                }
+            }];
         } else {
             
-            NSLog(@"%s [%d] [The database file does not exist: %@!]", __func__, __LINE__,databasePath);
+            NSLog(@"%s [%d] [The database table name is empty!]", __func__, __LINE__);
         }
     } else {
         
-        NSLog(@"%s [%d] [The database name is empty!]", __func__, __LINE__);
+        NSLog(@"%s [%d] [The database file does not exist: %@!]", __func__, __LINE__,databasePath);
     }
     
     return success;
@@ -554,42 +542,40 @@ static GQHDatabaseManager *manager = nil;
     // 数据表名
     NSString *dbTable = database.db_table;
     
-    if (dbName && dbName.length > 0) {
+    if (![self isNonnullString:dbName]) {
         
-        // 数据库文件全路径
-        NSString *databasePath = [self databaseName:dbName atPath:dbPath];
-        NSLog(@"The database file path:%@",databasePath);
+        NSLog(@"%s [%d] [The database name is empty!]", __func__, __LINE__);
+        return success;
+    }
+    
+    // 数据库文件全路径
+    NSString *databasePath = [self databaseName:dbName atPath:dbPath];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:databasePath]) {
         
-        if ([[NSFileManager defaultManager] fileExistsAtPath:databasePath]) {
+        if ([self isNonnullString:dbTable]) {
             
-            if (dbTable && dbTable.length > 0) {
+            // 数据库队列
+            self.databaseQueue = [FMDatabaseQueue databaseQueueWithPath:databasePath];
+            [self.databaseQueue inDatabase:^(FMDatabase * _Nonnull db) {
                 
-                // 数据库队列
-                self.databaseQueue = [FMDatabaseQueue databaseQueueWithPath:databasePath];
-                [self.databaseQueue inDatabase:^(FMDatabase * _Nonnull db) {
+                if ([db tableExists:dbTable]) {
                     
-                    if ([db tableExists:dbTable]) {
-                        
-                        // 删除数据
-                        NSString *deleteSQL = [self sql_deleteDataWith:query inTable:dbTable];
-                        
-                        success = [db executeUpdate: deleteSQL];
-                    } else {
-                        
-                        NSLog(@"%s [%d] [The database table does not exist: %@!]", __func__, __LINE__,dbTable);
-                    }
-                }];
-            } else {
-                
-                NSLog(@"%s [%d] [The database table name is empty!]", __func__, __LINE__);
-            }
+                    // 删除数据
+                    NSString *deleteSQL = [self sql_deleteDataWith:query inTable:dbTable];
+                    
+                    success = [db executeUpdate: deleteSQL];
+                } else {
+                    
+                    NSLog(@"%s [%d] [The database table does not exist: %@!]", __func__, __LINE__,dbTable);
+                }
+            }];
         } else {
             
-            NSLog(@"%s [%d] [The database file does not exist: %@!]", __func__, __LINE__,databasePath);
+            NSLog(@"%s [%d] [The database table name is empty!]", __func__, __LINE__);
         }
     } else {
         
-        NSLog(@"%s [%d] [The database name is empty!]", __func__, __LINE__);
+        NSLog(@"%s [%d] [The database file does not exist: %@!]", __func__, __LINE__,databasePath);
     }
     
     return success;
@@ -620,76 +606,72 @@ static GQHDatabaseManager *manager = nil;
     // 数据表对应模型类
     Class dbClass = database.db_cls;
     
-    if (dbName && dbName.length > 0) {
+    if (![self isNonnullString:dbName]) {
         
-        // 数据库文件全路径
-        NSString *databasePath = [self databaseName:dbName atPath:dbPath];
-        NSLog(@"The database file path:%@",databasePath);
+        NSLog(@"%s [%d] [The database name is empty!]", __func__, __LINE__);
+        return [models copy];
+    }
+    
+    // 数据库文件全路径
+    NSString *databasePath = [self databaseName:dbName atPath:dbPath];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:databasePath]) {
         
-        if ([[NSFileManager defaultManager] fileExistsAtPath:databasePath]) {
+        if ([self isNonnullString:dbTable]) {
             
-            if (dbTable && dbTable.length > 0) {
+            // 数据库队列
+            self.databaseQueue = [FMDatabaseQueue databaseQueueWithPath:databasePath];
+            [self.databaseQueue inDatabase:^(FMDatabase * _Nonnull db) {
                 
-                // 数据库队列
-                self.databaseQueue = [FMDatabaseQueue databaseQueueWithPath:databasePath];
-                [self.databaseQueue inDatabase:^(FMDatabase * _Nonnull db) {
+                if ([db tableExists:dbTable]) {
                     
-                    if ([db tableExists:dbTable]) {
+                    // 查询数据
+                    NSString *querySQL = [self sql_queryDataWith:query size:size page:page inTable:dbTable];
+                    
+                    FMResultSet *resultSet = [db executeQuery:querySQL];
+                    while ([resultSet next]) {
                         
-                        // 查询数据
-                        NSString *querySQL = [self sql_queryDataWith:query size:size page:page inTable:dbTable];
+                        // 模型
+                        id model = [[dbClass class] new];
+                        // 属性个数
+                        unsigned int count = 0;
+                        // 属性列表
+                        objc_property_t *propertyList = class_copyPropertyList([dbClass class], &count);
                         
-                        FMResultSet *resultSet = [db executeQuery:querySQL];
-                        
-                        // 遍历
-                        while ([resultSet next]) {
+                        for (int i = 0; i < count; i++) {
                             
-                            // 模型
-                            id model = [[dbClass class] new];
-                            // 属性个数
-                            unsigned int count = 0;
-                            // 属性列表
-                            objc_property_t *propertyList = class_copyPropertyList([dbClass class], &count);
-                            
-                            for (int i = 0; i < count; i++) {
-                                
-                                // 第i个属性
-                                objc_property_t property = propertyList[i];
-                                // 属性名
-                                const char *name = property_getName(property);
-                                // 数据库字段名
-                                NSString *field = [NSString stringWithUTF8String:name];
-                                // NSNumber, NSString, NSData, NSNull,[NSNull null]
-                                id value = [resultSet objectForColumn:field];
-                                //
-                                [model setValue:value forKey:field];
-                            }
-                            
-                            // 释放
-                            free(propertyList);
-                            
-                            // 保存到数组中
-                            [models addObject:model];
+                            // 第i个属性
+                            objc_property_t property = propertyList[i];
+                            // 属性名
+                            const char *name = property_getName(property);
+                            // 数据库字段名
+                            NSString *field = [NSString stringWithUTF8String:name];
+                            // NSNumber, NSString, NSData, NSNull,[NSNull null]
+                            id value = [resultSet objectForColumn:field];
+                            //
+                            [model setValue:value forKey:field];
                         }
-                    } else {
                         
-                        NSLog(@"%s [%d] [The database table does not exist: %@!]", __func__, __LINE__,dbTable);
+                        // 释放
+                        free(propertyList);
+                        
+                        // 保存到数组中
+                        [models addObject:model];
                     }
-                }];
-            } else {
-                
-                NSLog(@"%s [%d] [The database table name is empty!]", __func__, __LINE__);
-            }
+                } else {
+                    
+                    NSLog(@"%s [%d] [The database table does not exist: %@!]", __func__, __LINE__,dbTable);
+                }
+            }];
         } else {
             
-            NSLog(@"%s [%d] [The database file does not exist: %@!]", __func__, __LINE__,databasePath);
+            NSLog(@"%s [%d] [The database table name is empty!]", __func__, __LINE__);
         }
     } else {
         
-        NSLog(@"%s [%d] [The database name is empty!]", __func__, __LINE__);
+        NSLog(@"%s [%d] [The database file does not exist: %@!]", __func__, __LINE__,databasePath);
     }
     
-    return models;
+    return [models copy];
 }
 
 /// 模糊查询数据
@@ -745,7 +727,6 @@ static GQHDatabaseManager *manager = nil;
 - (NSString *)sql_insertData:(id)model intoTable:(NSString *)tableName database:(NSString *)databaseName {
     
     // SQL语句
-    // INSERT INTO 'table_name' ('db_id_pk','name','age') VALUES (NULL,'allen','29');
     NSString *sqlString = [NSString stringWithFormat:@"INSERT INTO '%@' ('%@'", tableName, kDatabasePrimaryKey];
     
     // 属性个数
@@ -817,7 +798,6 @@ static GQHDatabaseManager *manager = nil;
 - (NSString *)sql_deleteDataWith:(NSDictionary *)query inTable:(NSString *)tableName {
     
     // SQL语句
-    // DELETE FROM '%@' WHERE %@ = '%@' AND %@ = '%@' AND %@ = '%@';
     __block NSString *sqlString = [NSString stringWithFormat:@"DELETE FROM '%@' WHERE", tableName];
     
     if (query.count > 0) {
@@ -848,7 +828,6 @@ static GQHDatabaseManager *manager = nil;
 - (NSString *)sql_queryDataWith:(NSDictionary *)query size:(NSInteger)size page:(NSInteger)page inTable:(NSString *)tableName {
     
     // SQL语句
-    // SELECT * FROM 'order' WHERE %@ = '%@' ORDER BY db_id_pk DESC LIMIT 1000 OFFSET (3*1000);
     __block NSString *sqlString = [NSString stringWithFormat:@"SELECT * FROM '%@' WHERE", tableName];
     
     if (query.count > 0) {
@@ -869,6 +848,25 @@ static GQHDatabaseManager *manager = nil;
     }
     
     return sqlString;
+}
+
+#pragma mark - PrivateMethod
+
+/// 是否是非空字符串
+/// @param string 字符串
+- (BOOL)isNonnullString:(NSString *)string {
+    
+    if (![string isKindOfClass:[NSString class]]) {
+        
+        return NO;
+    }
+    
+    if ([string isEqualToString:@""]) {
+        
+        return NO;
+    }
+    
+    return YES;
 }
 
 @end
