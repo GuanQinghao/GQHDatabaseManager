@@ -11,7 +11,7 @@
 #import <objc/message.h>
 
 
-/// 分页查询默认每页数量
+/// 分页查询默认每页大小
 static NSString * const kPageSize = @"1000";
 /// 数据表固定主键值(model中手动添加此属性)
 static NSString * const kDatabasePrimaryKey = @"db_pk_id";
@@ -590,9 +590,9 @@ static GQHDatabaseManager *manager = nil;
     
     // 数据库结构体
     GQHDatabase database = condition.db_database;
-    // 每页数
+    // 页大小
     NSInteger size = (condition.db_size > 0) ? condition.db_size : [kPageSize integerValue];
-    // 当前页
+    // 页码
     NSInteger page = (condition.db_page > 1) ? condition.db_page : 1;
     // 条件
     NSDictionary *query = condition.db_query;
@@ -678,6 +678,7 @@ static GQHDatabaseManager *manager = nil;
 /// @param condition 数据库操作条件结构体
 - (NSArray *)qh_fuzzyQueryDataWith:(GQHSQLiteCondition)condition {
     
+    //TODO:模糊查询
     return nil;
 }
 
@@ -822,8 +823,8 @@ static GQHDatabaseManager *manager = nil;
 
 /// SQL语句-查询数据
 /// @param query 条件
-/// @param size 每页大小
-/// @param page 当前页
+/// @param size 页大小
+/// @param page 页码
 /// @param tableName 数据表名
 - (NSString *)sql_queryDataWith:(NSDictionary *)query size:(NSInteger)size page:(NSInteger)page inTable:(NSString *)tableName {
     

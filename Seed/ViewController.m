@@ -26,54 +26,114 @@ static NSString * const kDatabaseTableProduct = @"product";
 
     // Do any additional setup after loading the view.
     
-    // 创建数据库文件
+    //MARK: 数据库操作
+    // 创建数据库文件(空库)
     [self createDatabase];
     
+    // 查询数据库文件路径
+    NSLog(@"%@",[[GQHDatabaseManager qh_sharedDatabaseManager] qh_filePathWithDatabaseName:kDatabaseName]);
+    
+    // 删除数据库文件
+    [self removeDatabase];
+    
+    //MARK: 数据表操作
+    // 创建表
+    [self createDatabaseTables];
+    
+    // 查询表名
+    [self queryDatabaseTableNames];
+    
+    // 清空表
+    [self truncateDatabase];
+    
+    // 删除表
+    [self removeDatabaseTable];
+    
+    //MARK: CRUD操作
     // 插入模型数据
-    [self insertModel];
+    [self insertData];
     
     // 查询模型数据
     [self queryDate];
     
     // 删除模型数据
-//    [self deleteModel];
-    
-    // 清空数据表
-//    [self truncateTable];
-    
-    // 删除数据表
-//    [self dropTable];
-    
-    // 删除数据库文件
-//    [self removeDatabase];
+    [self deleteData];
 }
 
-/// 创建数据库文件
 - (void)createDatabase {
     
+    // 数据库结构体
+    GQHDatabase database;
+    // 数据库文件名称
+    database.db_name = kDatabaseName;
+    // 默认Documents文件夹内
+    database.db_path = nil;
+    
+    // 创建数据库文件
+    [[GQHDatabaseManager qh_sharedDatabaseManager] qh_createDatabase:database];
+}
+
+- (void)removeDatabase {
+    
+    // 数据库结构体
     GQHDatabase database;
     database.db_name = kDatabaseName;
     
-    // order
+    [[GQHDatabaseManager qh_sharedDatabaseManager] qh_removeDatabase:database];
+}
+
+- (void)createDatabaseTables {
+    
+    // 数据库结构体
+    GQHDatabase database;
+    // 数据库的名称
+    database.db_name = kDatabaseName;
+    // 数据库中数据表的名称-Order表
     database.db_table = kDatabaseTableOrder;
+    // order表对应的模型类
     database.db_cls = [GQHOrderModel class];
+    
+    // 创建数据表
     [[GQHDatabaseManager qh_sharedDatabaseManager] qh_createDatabase:database];
     
-    // product
+    // Product表
     database.db_table = kDatabaseTableProduct;
     database.db_cls = [GQHProductModel class];
     [[GQHDatabaseManager qh_sharedDatabaseManager] qh_createDatabase:database];
+}
+
+- (void)queryDatabaseTableNames {
     
-    NSLog(@"%@",[[GQHDatabaseManager qh_sharedDatabaseManager] qh_queryAllTableNamesInDatabase:database]);
+    // 数据库结构体
+    GQHDatabase database;
+    database.db_name = kDatabaseName;
     
+    NSArray *tableNames = [[GQHDatabaseManager qh_sharedDatabaseManager] qh_queryAllTableNamesInDatabase:database];
+    NSLog(@"%@",tableNames);
+}
+
+- (void)truncateDatabase {
     
-    // 删除数据库
-    [[GQHDatabaseManager qh_sharedDatabaseManager] qh_removeDatabase:database];
+    // 数据库结构体
+    GQHDatabase database;
+    database.db_name = kDatabaseName;
+    database.db_table = kDatabaseTableProduct;
+    
+    [[GQHDatabaseManager qh_sharedDatabaseManager] qh_truncateDatabase:database];
+}
+
+- (void)removeDatabaseTable {
+    
+    // 数据库结构体
+    GQHDatabase database;
+    database.db_name = kDatabaseName;
+    database.db_table = kDatabaseTableProduct;
+    
     [[GQHDatabaseManager qh_sharedDatabaseManager] qh_dropDatabase:database];
 }
 
 /// 插入模型
-- (void)insertModel {
+- (void)insertData {
     
     // 解决循环时内存暴涨
     @autoreleasepool {
@@ -126,10 +186,23 @@ static NSString * const kDatabaseTableProduct = @"product";
     GQHSQLiteCondition condition;
     condition.db_database = database;
     condition.db_query = @{@"qh_count":@"6"};
-    condition.db_page = 2;
-    condition.db_size = 5;
+    condition.db_page = 1;
+    condition.db_size = 100;
     
     NSLog(@"%@",[[GQHDatabaseManager qh_sharedDatabaseManager] qh_queryDataWith:condition]);
+}
+
+- (void)deleteData {
+    
+    GQHDatabase database;
+    database.db_name = kDatabaseName;
+    database.db_table = kDatabaseTableOrder;
+    database.db_cls = [GQHOrderModel class];
+    
+    GQHSQLiteCondition condition;
+    condition.db_database = database;
+    condition.db_query = @{@"qh_count":@"6"};
+    [[GQHDatabaseManager qh_sharedDatabaseManager] qh_deleteDataWith:condition];
 }
 
 @end

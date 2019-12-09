@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// 数据库结构体
 typedef struct _GQHDatabase {
     
-    NSString *db_path;// 数据库路径
+    NSString *db_path;// 数据库路径, 默认为Documents文件夹
     NSString *db_name;// 数据库名
     NSString *db_table;// 数据表名
     Class db_cls;// 存储的模型类
@@ -29,16 +29,22 @@ NS_ASSUME_NONNULL_BEGIN
 typedef struct _GQHSQLiteCondition {
     
     GQHDatabase db_database;// 数据库结构体
-    NSInteger db_size;// 每页数量
-    NSInteger db_page;// 当前页
+    NSInteger db_size;// 页大小
+    NSInteger db_page;// 页码
     NSDictionary *db_query;// 查询条件
 } GQHSQLiteCondition;
 
 NS_ASSUME_NONNULL_END
 
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface GQHDatabaseManager : NSObject
+
+/**
+ 数据库管理单例
+ */
+@property (class, readonly, strong) GQHDatabaseManager *qh_sharedDatabaseManager;
 
 /// 数据库管理单例
 + (instancetype)qh_sharedDatabaseManager;
