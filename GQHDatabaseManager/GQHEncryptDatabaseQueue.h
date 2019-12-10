@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// 加密数据库队列
 /// @param aPath 数据库路径
 /// @param encryptKey 密钥
-+ (instancetype)databaseQueueWithPath:(NSString *)aPath encryptKey:(nonnull NSString *)encryptKey;
++ (instancetype)databaseQueueWithPath:(NSString *)aPath encryptKey:(nullable NSString *)encryptKey;
 
 @end
 

@@ -16,12 +16,12 @@ NS_ASSUME_NONNULL_BEGIN
 /// 创建加密数据库
 /// @param aPath 数据库路径
 /// @param encryptKey 密钥
-+ (instancetype)databaseWithPath:(NSString *)aPath encryptKey:(nonnull NSString *)encryptKey;
++ (instancetype)databaseWithPath:(NSString *)aPath encryptKey:(nullable NSString *)encryptKey;
 
 /// 创建加密数据库
 /// @param aPath 数据库路径
 /// @param encryptKey 密钥
-- (instancetype)initWithPath:(NSString *)aPath encryptKey:(nonnull NSString *)encryptKey;
+- (instancetype)initWithPath:(NSString *)aPath encryptKey:(nullable NSString *)encryptKey;
 
 @end
 
