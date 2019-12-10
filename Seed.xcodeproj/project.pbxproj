@@ -16,6 +16,8 @@
 		046AAE672398D902009C64C5 /* GQHDatabaseManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 046AAE652398D902009C64C5 /* GQHDatabaseManager.m */; };
 		046AAE6A2398DAAE009C64C5 /* GQHOrderModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 046AAE692398DAAE009C64C5 /* GQHOrderModel.m */; };
 		046AAE6D2398DAC1009C64C5 /* GQHProductModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 046AAE6C2398DAC1009C64C5 /* GQHProductModel.m */; };
+		04B72E30239F363A00CCBF17 /* GQHEncryptDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 04B72E2F239F363A00CCBF17 /* GQHEncryptDatabase.m */; };
+		04B72E33239F404200CCBF17 /* GQHEncryptDatabaseQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 04B72E32239F404200CCBF17 /* GQHEncryptDatabaseQueue.m */; };
 		F3E3FA3727F2BDB4DE372F2F /* libPods-Seed.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8EC328076E17A593A5F5101E /* libPods-Seed.a */; };
 /* End PBXBuildFile section */
 
@@ -37,6 +39,10 @@
 		046AAE692398DAAE009C64C5 /* GQHOrderModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GQHOrderModel.m; sourceTree = "<group>"; };
 		046AAE6B2398DAC1009C64C5 /* GQHProductModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GQHProductModel.h; sourceTree = "<group>"; };
 		046AAE6C2398DAC1009C64C5 /* GQHProductModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GQHProductModel.m; sourceTree = "<group>"; };
+		04B72E2E239F363A00CCBF17 /* GQHEncryptDatabase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GQHEncryptDatabase.h; sourceTree = "<group>"; };
+		04B72E2F239F363A00CCBF17 /* GQHEncryptDatabase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GQHEncryptDatabase.m; sourceTree = "<group>"; };
+		04B72E31239F404200CCBF17 /* GQHEncryptDatabaseQueue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GQHEncryptDatabaseQueue.h; sourceTree = "<group>"; };
+		04B72E32239F404200CCBF17 /* GQHEncryptDatabaseQueue.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GQHEncryptDatabaseQueue.m; sourceTree = "<group>"; };
 		8EC328076E17A593A5F5101E /* libPods-Seed.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Seed.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		99BBC5E1A622097CAE2AFC46 /* Pods-Seed.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Seed.release.xcconfig"; path = "Target Support Files/Pods-Seed/Pods-Seed.release.xcconfig"; sourceTree = "<group>"; };
 		B3C8C499C62A4C82483D8C93 /* Pods-Seed.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Seed.debug.xcconfig"; path = "Target Support Files/Pods-Seed/Pods-Seed.debug.xcconfig"; sourceTree = "<group>"; };
@@ -96,6 +102,10 @@
 			children = (
 				046AAE662398D902009C64C5 /* GQHDatabaseManager.h */,
 				046AAE652398D902009C64C5 /* GQHDatabaseManager.m */,
+				04B72E2E239F363A00CCBF17 /* GQHEncryptDatabase.h */,
+				04B72E2F239F363A00CCBF17 /* GQHEncryptDatabase.m */,
+				04B72E31239F404200CCBF17 /* GQHEncryptDatabaseQueue.h */,
+				04B72E32239F404200CCBF17 /* GQHEncryptDatabaseQueue.m */,
 			);
 			path = GQHDatabaseManager;
 			sourceTree = SOURCE_ROOT;
@@ -225,7 +235,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				046AAE532398BEF9009C64C5 /* ViewController.m in Sources */,
+				04B72E30239F363A00CCBF17 /* GQHEncryptDatabase.m in Sources */,
 				046AAE5B2398BF1C009C64C5 /* main.m in Sources */,
+				04B72E33239F404200CCBF17 /* GQHEncryptDatabaseQueue.m in Sources */,
 				046AAE6D2398DAC1009C64C5 /* GQHProductModel.m in Sources */,
 				046AAE6A2398DAAE009C64C5 /* GQHOrderModel.m in Sources */,
 				046AAE502398BEF9009C64C5 /* AppDelegate.m in Sources */,

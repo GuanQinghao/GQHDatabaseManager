@@ -4,9 +4,10 @@ inhibit_all_warnings!
 platform :osx, '10.14'
 
 def _pods
-    
-    #sqlite的工具
-    pod 'FMDB'
+  
+  #SQLite
+  pod 'FMDB/SQLCipher'
+  
 end
 
 target 'Seed' do

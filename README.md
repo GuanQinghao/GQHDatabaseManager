@@ -1,6 +1,6 @@
 # 简介
 
-基于[FMDB](https://github.com/ccgus/fmdb.git)的简单封装，实现数据模型与数据库的直接转换。支持iOS和macOS。
+基于[FMDB](https://github.com/ccgus/fmdb.git)的简单封装，实现数据模型与数据库的直接转换。支持数据库加密解密，支持iOS和macOS。
 
 **主要功能**
 
@@ -47,13 +47,7 @@
 通过cocoapods导入FMDB，终端执行 pod insatll 命令
 
 ```
-pod 'FMDB'
-```
-
-若手动将FMDB文件拖入工程内，将头文件引用方式修改为
-
-```
-#import "FMDB.h"
+pod 'FMDB/SQLCipher'
 ```
 
 ### 2 添加SQLite依赖库
@@ -71,4 +65,4 @@ pod 'FMDB'
 
 # 使用
 
-详见 demo
+默认对数据库不进行加密，需要加密，修改 **GQHDatabaseManager.m** 文件中的 **kDatabaseSecretKey** 值为非空，详细使用方法请下载。

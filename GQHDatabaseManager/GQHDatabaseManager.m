@@ -7,23 +7,32 @@
 //
 
 #import "GQHDatabaseManager.h"
-#import <FMDB/FMDB.h>
 #import <objc/message.h>
+#import <FMDB/FMDB.h>
+#import "GQHEncryptDatabase.h"
+#import "GQHEncryptDatabaseQueue.h"
 
+
+//MARK: 密钥
+/// 数据库密钥, 设置为nil表示不加密
+static NSString * const kDatabaseSecretKey = nil;
 
 /// 分页查询默认每页大小
 static NSString * const kPageSize = @"1000";
+
 /// 数据表固定主键值(model中手动添加此属性)
 static NSString * const kDatabasePrimaryKey = @"db_pk_id";
+
 /// 数据库管理单例
 static GQHDatabaseManager *manager = nil;
+
 
 @interface GQHDatabaseManager ()
 
 /**
  数据库队列
  */
-@property (nonatomic, strong) FMDatabaseQueue *databaseQueue;
+@property (nonatomic, strong) GQHEncryptDatabaseQueue *databaseQueue;
 
 @end
 
@@ -145,7 +154,7 @@ static GQHDatabaseManager *manager = nil;
     }
     
     // 数据库队列
-    self.databaseQueue = [FMDatabaseQueue databaseQueueWithPath:databasePath];
+    self.databaseQueue = [GQHEncryptDatabaseQueue databaseQueueWithPath:databasePath encryptKey:kDatabaseSecretKey];
     [self.databaseQueue inDatabase:^(FMDatabase * _Nonnull db) {
         
         if ([db tableExists:tableName]) {
@@ -279,7 +288,7 @@ static GQHDatabaseManager *manager = nil;
     if ([[NSFileManager defaultManager] fileExistsAtPath:databasePath]) {
         
         // 数据库队列
-        self.databaseQueue = [FMDatabaseQueue databaseQueueWithPath:databasePath];
+        self.databaseQueue = [GQHEncryptDatabaseQueue databaseQueueWithPath:databasePath encryptKey:kDatabaseSecretKey];
         [self.databaseQueue inDatabase:^(FMDatabase * _Nonnull db) {
             
             // 查询数据库所有数据表名
@@ -373,7 +382,7 @@ static GQHDatabaseManager *manager = nil;
         if ([self isNonnullString:dbTable]) {
             
             // 数据库队列
-            self.databaseQueue = [FMDatabaseQueue databaseQueueWithPath:databasePath];
+            self.databaseQueue = [GQHEncryptDatabaseQueue databaseQueueWithPath:databasePath encryptKey:kDatabaseSecretKey];
             [self.databaseQueue inDatabase:^(FMDatabase * _Nonnull db) {
                 
                 if ([db tableExists:dbTable]) {
@@ -444,7 +453,7 @@ static GQHDatabaseManager *manager = nil;
         if ([self isNonnullString:dbTable]) {
             
             // 数据库队列
-            self.databaseQueue = [FMDatabaseQueue databaseQueueWithPath:databasePath];
+            self.databaseQueue = [GQHEncryptDatabaseQueue databaseQueueWithPath:databasePath encryptKey:kDatabaseSecretKey];
             [self.databaseQueue inDatabase:^(FMDatabase * _Nonnull db) {
                 
                 if ([db tableExists:dbTable]) {
@@ -499,7 +508,7 @@ static GQHDatabaseManager *manager = nil;
         if ([self isNonnullString:dbTable]) {
             
             // 数据库队列
-            self.databaseQueue = [FMDatabaseQueue databaseQueueWithPath:databasePath];
+            self.databaseQueue = [GQHEncryptDatabaseQueue databaseQueueWithPath:databasePath encryptKey:kDatabaseSecretKey];
             [self.databaseQueue inDatabase:^(FMDatabase * _Nonnull db) {
                 
                 if ([db tableExists:dbTable]) {
@@ -555,7 +564,7 @@ static GQHDatabaseManager *manager = nil;
         if ([self isNonnullString:dbTable]) {
             
             // 数据库队列
-            self.databaseQueue = [FMDatabaseQueue databaseQueueWithPath:databasePath];
+            self.databaseQueue = [GQHEncryptDatabaseQueue databaseQueueWithPath:databasePath encryptKey:kDatabaseSecretKey];
             [self.databaseQueue inDatabase:^(FMDatabase * _Nonnull db) {
                 
                 if ([db tableExists:dbTable]) {
@@ -619,7 +628,7 @@ static GQHDatabaseManager *manager = nil;
         if ([self isNonnullString:dbTable]) {
             
             // 数据库队列
-            self.databaseQueue = [FMDatabaseQueue databaseQueueWithPath:databasePath];
+            self.databaseQueue = [GQHEncryptDatabaseQueue databaseQueueWithPath:databasePath encryptKey:kDatabaseSecretKey];
             [self.databaseQueue inDatabase:^(FMDatabase * _Nonnull db) {
                 
                 if ([db tableExists:dbTable]) {
