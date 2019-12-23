@@ -81,14 +81,8 @@ static GQHDatabaseManager *manager = nil;
     NSString *databasePath = [self databaseName:dbName atPath:dbPath];
     if ([[NSFileManager defaultManager] fileExistsAtPath:databasePath]) {
         
-        if ([self isNonnullString:dbTable]) {
-            
-            // 创建数据表
-            success = [self createDatabaseTable:dbTable withClass:dbClass atPath:databasePath];
-        } else {
-            
-            NSLog(@"%s [%d] [The database file already exists: %@!]", __func__, __LINE__,databasePath);
-        }
+        // 创建数据表
+        success = [self createDatabaseTable:dbTable withClass:dbClass atPath:databasePath];
     } else {
         
         // 创建数据库文件
