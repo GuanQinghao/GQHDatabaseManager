@@ -29,9 +29,7 @@ static GQHDatabaseManager *manager = nil;
 
 @interface GQHDatabaseManager ()
 
-/**
- 数据库队列
- */
+/// 数据库队列
 @property (nonatomic, strong) GQHEncryptDatabaseQueue *databaseQueue;
 
 @end

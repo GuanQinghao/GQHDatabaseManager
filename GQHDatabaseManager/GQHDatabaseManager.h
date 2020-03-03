@@ -41,9 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface GQHDatabaseManager : NSObject
 
-/**
- 数据库管理单例
- */
+/// 数据库管理单例
 @property (class, readonly, strong) GQHDatabaseManager *qh_sharedDatabaseManager;
 
 /// 数据库管理单例
