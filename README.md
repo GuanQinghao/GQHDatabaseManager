@@ -36,7 +36,7 @@
 * 插入模型数据
 * 修改模型数据
 * 条件查询 
-*  模糊查询
+* 模糊查询
 * 分页查询
 * 条件删除
 
@@ -56,13 +56,12 @@ pod 'FMDB/SQLCipher'
 
 ### 3 添加文件
 
-手动将 GQHDatabaseManager 文件夹拖入工程，在需要使用的类中引用头文件
+手动将 SeedDatabaseManager 文件夹拖入工程，在需要使用的类中引用头文件
 
 ```
-#import "GQHDatabaseManager.h"
+#import "SeedDatabaseManager.h"
 ```
 
 
 # 使用
 
-(待续 To-do)

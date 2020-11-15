@@ -1,16 +1,16 @@
 //
-//  GQHEncryptDatabase.m
+//  SeedEncryptDatabase.m
 //  Seed
 //
-//  Created by Mac on 2019/12/10.
-//  Copyright © 2019 GuanQinghao. All rights reserved.
+//  Created by Hao on 2020/11/15.
+//  Copyright © 2020 GuanQinghao. All rights reserved.
 //
 
-#import "GQHEncryptDatabase.h"
+#import "SeedEncryptDatabase.h"
 #import <sqlite3.h>
 
 
-@interface GQHEncryptDatabase () {
+@interface SeedEncryptDatabase () {
     
     // 密钥
     NSString *_encryptKey;
@@ -18,14 +18,15 @@
 
 @end
 
-@implementation GQHEncryptDatabase
+
+@implementation SeedEncryptDatabase
 
 /// 创建加密数据库
 /// @param aPath 数据库路径
 /// @param encryptKey 密钥
 + (instancetype)databaseWithPath:(NSString *)aPath encryptKey:(NSString *)encryptKey {
     
-    return [[[self class] alloc] initWithPath:aPath encryptKey:encryptKey];
+    return [[self alloc] initWithPath:aPath encryptKey:encryptKey];
 }
 
 /// 创建加密数据库

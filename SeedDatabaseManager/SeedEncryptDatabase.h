@@ -1,17 +1,17 @@
 //
-//  GQHEncryptDatabase.h
+//  SeedEncryptDatabase.h
 //  Seed
 //
-//  Created by Mac on 2019/12/10.
-//  Copyright © 2019 GuanQinghao. All rights reserved.
+//  Created by Hao on 2020/11/15.
+//  Copyright © 2020 GuanQinghao. All rights reserved.
 //
 
-#import "FMDatabase.h"
+#import <FMDatabase.h>
 
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface GQHEncryptDatabase : FMDatabase
+@interface SeedEncryptDatabase : FMDatabase
 
 /// 创建加密数据库
 /// @param aPath 数据库路径

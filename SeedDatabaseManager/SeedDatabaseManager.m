@@ -1,38 +1,44 @@
 //
-//  GQHDatabaseManager.m
+//  SeedDatabaseManager.m
 //  Seed
 //
-//  Created by Mac on 2019/11/18.
-//  Copyright © 2019 GuanQinghao. All rights reserved.
+//  Created by Hao on 2020/11/15.
+//  Copyright © 2020 GuanQinghao. All rights reserved.
 //
 
-#import "GQHDatabaseManager.h"
+#import "SeedDatabaseManager.h"
 #import <objc/message.h>
 #import <FMDB/FMDB.h>
-#import "GQHEncryptDatabase.h"
-#import "GQHEncryptDatabaseQueue.h"
+#import "SeedEncryptDatabase.h"
+#import "SeedEncryptDatabaseQueue.h"
+
+
+#ifdef DEBUG
+#define NSLog(format, ...)  printf("[%s] [%s] %s [%d] %s\n",[[[NSString stringWithFormat:@"%@",[NSDate dateWithTimeIntervalSinceNow:(8 * 60 * 60)]] substringToIndex:19] UTF8String],[[[NSString stringWithUTF8String: __FILE__] lastPathComponent] UTF8String],[[NSString stringWithUTF8String:__FUNCTION__] UTF8String],__LINE__, [[NSString stringWithFormat:format, ##__VA_ARGS__] UTF8String])
+#else
+#define NSLog(...)
+#endif
 
 
 /// 分页查询默认每页大小
 static NSString * const kPageSize = @"1000";
 /// 数据表固定主键值(model中手动添加此属性)
 static NSString * const kDatabasePrimaryKey = @"db_pk_id";
-/// 数据库管理单例
-static GQHDatabaseManager *manager = nil;
 
-
-@interface GQHDatabaseManager ()
+@interface SeedDatabaseManager ()
 
 /// 数据库队列
-@property (nonatomic, strong) GQHEncryptDatabaseQueue *databaseQueue;
+@property (nonatomic, strong) SeedEncryptDatabaseQueue *databaseQueue;
 
 @end
 
-@implementation GQHDatabaseManager
+@implementation SeedDatabaseManager
 
 /// 数据库管理单例
-+ (instancetype)qh_sharedDatabaseManager {
++ (instancetype)s_sharedDatabaseManager {
     
+    /// 数据库管理单例
+    static SeedDatabaseManager *manager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         
@@ -44,14 +50,15 @@ static GQHDatabaseManager *manager = nil;
 
 + (instancetype)allocWithZone:(struct _NSZone *)zone {
     
-    return [[self class] qh_sharedDatabaseManager];
+    return [self s_sharedDatabaseManager];
 }
 
 
-//MARK:数据库
+#pragma mark ----------------------------- <数据库> -----------------------------
+
 /// 创建数据库
 /// @param database 数据库结构体
-- (BOOL)qh_createDatabase:(GQHDatabase)database {
+- (BOOL)s_createDatabase:(SeedDatabase)database {
     
     // 创建数据库是否成功
     __block BOOL success = NO;
@@ -75,6 +82,7 @@ static GQHDatabaseManager *manager = nil;
     
     // 数据库文件全路径
     NSString *databasePath = [self databaseName:dbName atPath:dbPath];
+    NSLog(@"The database path:%@",databasePath);
     if ([[NSFileManager defaultManager] fileExistsAtPath:databasePath]) {
         
         // 创建数据表
@@ -97,7 +105,7 @@ static GQHDatabaseManager *manager = nil;
 
 /// 清空数据表
 /// @param database 数据库结构体
-- (BOOL)qh_truncateDatabase:(GQHDatabase)database {
+- (BOOL)s_truncateDatabase:(SeedDatabase)database {
     
     // 数据表是否清空成功
     __block BOOL success = NO;
@@ -119,12 +127,13 @@ static GQHDatabaseManager *manager = nil;
     
     // 数据库文件全路径
     NSString *databasePath = [self databaseName:dbName atPath:dbPath];
+    NSLog(@"The database path:%@",databasePath);
     if ([[NSFileManager defaultManager] fileExistsAtPath:databasePath]) {
         
         if ([self isNonnullString:dbTable]) {
             
             // 数据库队列
-            self.databaseQueue = [GQHEncryptDatabaseQueue databaseQueueWithPath:databasePath encryptKey:dbEncryptKey];
+            self.databaseQueue = [SeedEncryptDatabaseQueue s_databaseQueueWithPath:databasePath encryptKey:dbEncryptKey];
             [self.databaseQueue inDatabase:^(FMDatabase * _Nonnull db) {
                 
                 if ([db tableExists:dbTable]) {
@@ -152,7 +161,7 @@ static GQHDatabaseManager *manager = nil;
 
 /// 删除数据表(不能删除非空数据表, 先清空数据表, 再删除数据表)
 /// @param database 数据库结构体
-- (BOOL)qh_dropDatabase:(GQHDatabase)database {
+- (BOOL)s_dropDatabase:(SeedDatabase)database {
     
     // 数据表是否删除成功
     __block BOOL success = NO;
@@ -176,12 +185,13 @@ static GQHDatabaseManager *manager = nil;
     
     // 数据库文件全路径
     NSString *databasePath = [self databaseName:dbName atPath:dbPath];
+    NSLog(@"The database path:%@",databasePath);
     if ([[NSFileManager defaultManager] fileExistsAtPath:databasePath]) {
         
         if ([self isNonnullString:dbTable]) {
             
             // 数据库队列
-            self.databaseQueue = [GQHEncryptDatabaseQueue databaseQueueWithPath:databasePath encryptKey:dbEncryptKey];
+            self.databaseQueue = [SeedEncryptDatabaseQueue s_databaseQueueWithPath:databasePath encryptKey:dbEncryptKey];
             [self.databaseQueue inDatabase:^(FMDatabase * _Nonnull db) {
                 
                 if ([db tableExists:dbTable]) {
@@ -228,7 +238,7 @@ static GQHDatabaseManager *manager = nil;
 
 /// 删除数据库(不能删除非空数据库, 先清空数据表, 再删除数据表, 最后删除数据库)
 /// @param database 数据库结构体
-- (BOOL)qh_removeDatabase:(GQHDatabase)database {
+- (BOOL)s_removeDatabase:(SeedDatabase)database {
     
     // 数据表是否删除成功
     __block BOOL success = NO;
@@ -246,10 +256,11 @@ static GQHDatabaseManager *manager = nil;
     
     // 数据库文件全路径
     NSString *databasePath = [self databaseName:dbName atPath:dbPath];
+    NSLog(@"The database path:%@",databasePath);
     if ([[NSFileManager defaultManager] fileExistsAtPath:databasePath]) {
         
         // 查询数据库中所有的数据表名
-        NSArray<NSString *> *tableNames = [self qh_queryAllTableNamesInDatabase:database];
+        NSArray<NSString *> *tableNames = [self s_allTableNamesInDatabase:database];
         if (tableNames.count > 0) {
             
             // 非空数据库
@@ -268,32 +279,33 @@ static GQHDatabaseManager *manager = nil;
     return success;
 }
 
-/// 数据库文件路径(Documents文件夹下, 已存在的数据库, 不存在则返回nil)
+/// 数据库文件路径(Documents文件夹下, 已存在的数据库)
 /// @param databaseName 数据库文件名
-- (NSString *)qh_filePathWithDatabaseName:(NSString *)databaseName {
+- (NSArray<NSString *> *)s_filePathWithDatabaseName:(NSString *)databaseName {
     
-    NSMutableArray *filePaths = [NSMutableArray array];
+    NSMutableArray *result = [NSMutableArray array];
+    
+    NSMutableArray<NSString *> *filePaths = [NSMutableArray array];
     // 遍历Documents文件夹
     [self allFilePaths:filePaths atPath:NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject];
-    
-    for (NSString *path in filePaths) {
+    [filePaths enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         
-        NSString *fileName = [[path componentsSeparatedByString:@"/"] lastObject];
+        NSString *fileName = [[obj componentsSeparatedByString:@"/"] lastObject];
         if ([fileName isEqualToString:databaseName]) {
             
-            return path;
+            [result addObject:obj];
         }
-    }
+    }];
     
-    return nil;
+    return result.copy;
 }
 
 /// 查询数据库所有数据表名称
 /// @param database 数据库结构体
-- (NSArray<NSString *> *)qh_queryAllTableNamesInDatabase:(GQHDatabase)database {
+- (NSArray<NSString *> *)s_allTableNamesInDatabase:(SeedDatabase)database {
     
     // 数据表名
-    __block NSMutableArray<NSString *> *tableNames = [NSMutableArray array];
+    NSMutableArray<NSString *> *tableNames = [NSMutableArray array];
     
     // 数据库名
     NSString *dbName = database.db_name;
@@ -310,10 +322,11 @@ static GQHDatabaseManager *manager = nil;
     
     // 数据库文件全路径
     NSString *databasePath = [self databaseName:dbName atPath:dbPath];
+    NSLog(@"The database path:%@",databasePath);
     if ([[NSFileManager defaultManager] fileExistsAtPath:databasePath]) {
         
         // 数据库队列
-        self.databaseQueue = [GQHEncryptDatabaseQueue databaseQueueWithPath:databasePath encryptKey:dbEncryptKey];
+        self.databaseQueue = [SeedEncryptDatabaseQueue s_databaseQueueWithPath:databasePath encryptKey:dbEncryptKey];
         [self.databaseQueue inDatabase:^(FMDatabase * _Nonnull db) {
             
             // 查询数据库所有数据表名
@@ -333,7 +346,7 @@ static GQHDatabaseManager *manager = nil;
         NSLog(@"%s [%d] [The database file does not exist: %@!]", __func__, __LINE__,databasePath);
     }
     
-    return [tableNames copy];
+    return tableNames.copy;
 }
 
 /// 数据库文件全路径
@@ -385,7 +398,7 @@ static GQHDatabaseManager *manager = nil;
     }
     
     // 数据库队列
-    self.databaseQueue = [GQHEncryptDatabaseQueue databaseQueueWithPath:databasePath encryptKey:key];
+    self.databaseQueue = [SeedEncryptDatabaseQueue s_databaseQueueWithPath:databasePath encryptKey:key];
     [self.databaseQueue inDatabase:^(FMDatabase * _Nonnull db) {
         
         if ([db tableExists:tableName]) {
@@ -477,11 +490,12 @@ static GQHDatabaseManager *manager = nil;
 }
 
 
-//MARK:CRUD
+#pragma mark ----------------------------- <CRUD> -----------------------------
+
 /// 插入数据
 /// @param model 模型数据
 /// @param database 数据库结构体
-- (BOOL)qh_insertData:(id)model intoDatabase:(GQHDatabase)database {
+- (BOOL)s_insertData:(id)model intoDatabase:(SeedDatabase)database {
     
     // 数据表是否插入数据成功
     __block BOOL success = NO;
@@ -503,12 +517,13 @@ static GQHDatabaseManager *manager = nil;
     
     // 数据库文件全路径
     NSString *databasePath = [self databaseName:dbName atPath:dbPath];
+    NSLog(@"The database path:%@",databasePath);
     if ([[NSFileManager defaultManager] fileExistsAtPath:databasePath]) {
         
         if ([self isNonnullString:dbTable]) {
             
             // 数据库队列
-            self.databaseQueue = [GQHEncryptDatabaseQueue databaseQueueWithPath:databasePath encryptKey:dbEncryptKey];
+            self.databaseQueue = [SeedEncryptDatabaseQueue s_databaseQueueWithPath:databasePath encryptKey:dbEncryptKey];
             [self.databaseQueue inDatabase:^(FMDatabase * _Nonnull db) {
                 
                 if ([db tableExists:dbTable]) {
@@ -537,7 +552,7 @@ static GQHDatabaseManager *manager = nil;
 /// 更新数据
 /// @param model 修改后的模型数据
 /// @param database 数据库结构体
-- (BOOL)qh_updateData:(id)model inDatabase:(GQHDatabase)database {
+- (BOOL)s_updateData:(id)model inDatabase:(SeedDatabase)database {
     
     // 数据表是否插入数据成功
     __block BOOL success = NO;
@@ -559,12 +574,13 @@ static GQHDatabaseManager *manager = nil;
     
     // 数据库文件全路径
     NSString *databasePath = [self databaseName:dbName atPath:dbPath];
+    NSLog(@"The database path:%@",databasePath);
     if ([[NSFileManager defaultManager] fileExistsAtPath:databasePath]) {
         
         if ([self isNonnullString:dbTable]) {
             
             // 数据库队列
-            self.databaseQueue = [GQHEncryptDatabaseQueue databaseQueueWithPath:databasePath encryptKey:dbEncryptKey];
+            self.databaseQueue = [SeedEncryptDatabaseQueue s_databaseQueueWithPath:databasePath encryptKey:dbEncryptKey];
             [self.databaseQueue inDatabase:^(FMDatabase * _Nonnull db) {
                 
                 if ([db tableExists:dbTable]) {
@@ -592,13 +608,13 @@ static GQHDatabaseManager *manager = nil;
 
 /// 删除数据
 /// @param condition 数据库操作条件结构体
-- (BOOL)qh_deleteDataWith:(GQHSQLiteCondition)condition {
+- (BOOL)s_deleteDataWith:(SeedSQLiteCondition)condition {
     
     // 数据是否删除成功
     __block BOOL success = NO;
     
     // 数据库结构体
-    GQHDatabase database = condition.db_database;
+    SeedDatabase database = condition.db_database;
     // 条件
     NSDictionary *query = condition.db_query;
     
@@ -619,12 +635,13 @@ static GQHDatabaseManager *manager = nil;
     
     // 数据库文件全路径
     NSString *databasePath = [self databaseName:dbName atPath:dbPath];
+    NSLog(@"The database path:%@",databasePath);
     if ([[NSFileManager defaultManager] fileExistsAtPath:databasePath]) {
         
         if ([self isNonnullString:dbTable]) {
             
             // 数据库队列
-            self.databaseQueue = [GQHEncryptDatabaseQueue databaseQueueWithPath:databasePath encryptKey:dbEncryptKey];
+            self.databaseQueue = [SeedEncryptDatabaseQueue s_databaseQueueWithPath:databasePath encryptKey:dbEncryptKey];
             [self.databaseQueue inDatabase:^(FMDatabase * _Nonnull db) {
                 
                 if ([db tableExists:dbTable]) {
@@ -652,13 +669,13 @@ static GQHDatabaseManager *manager = nil;
 
 /// 查询数据
 /// @param condition 数据库操作条件结构体
-- (NSArray *)qh_queryDataWith:(GQHSQLiteCondition)condition {
+- (NSArray *)s_queryDataWith:(SeedSQLiteCondition)condition {
     
     // 查询结果
     NSMutableArray *models = [NSMutableArray array];
     
     // 数据库结构体
-    GQHDatabase database = condition.db_database;
+    SeedDatabase database = condition.db_database;
     // 页大小
     NSInteger size = (condition.db_size > 0) ? condition.db_size : [kPageSize integerValue];
     // 页码
@@ -685,12 +702,13 @@ static GQHDatabaseManager *manager = nil;
     
     // 数据库文件全路径
     NSString *databasePath = [self databaseName:dbName atPath:dbPath];
+    NSLog(@"The database path:%@",databasePath);
     if ([[NSFileManager defaultManager] fileExistsAtPath:databasePath]) {
         
         if ([self isNonnullString:dbTable]) {
             
             // 数据库队列
-            self.databaseQueue = [GQHEncryptDatabaseQueue databaseQueueWithPath:databasePath encryptKey:dbEncryptKey];
+            self.databaseQueue = [SeedEncryptDatabaseQueue s_databaseQueueWithPath:databasePath encryptKey:dbEncryptKey];
             [self.databaseQueue inDatabase:^(FMDatabase * _Nonnull db) {
                 
                 if ([db tableExists:dbTable]) {
@@ -747,13 +765,13 @@ static GQHDatabaseManager *manager = nil;
 
 /// 模糊查询数据
 /// @param condition 数据库操作条件结构体
-- (NSArray *)qh_fuzzyQueryDataWith:(GQHSQLiteCondition)condition {
+- (NSArray *)s_fuzzyQueryDataWith:(SeedSQLiteCondition)condition {
     
     // 查询结果
     NSMutableArray *models = [NSMutableArray array];
     
     // 数据库结构体
-    GQHDatabase database = condition.db_database;
+    SeedDatabase database = condition.db_database;
     // 页大小
     NSInteger size = (condition.db_size > 0) ? condition.db_size : [kPageSize integerValue];
     // 页码
@@ -780,12 +798,13 @@ static GQHDatabaseManager *manager = nil;
     
     // 数据库文件全路径
     NSString *databasePath = [self databaseName:dbName atPath:dbPath];
+    NSLog(@"The database path:%@",databasePath);
     if ([[NSFileManager defaultManager] fileExistsAtPath:databasePath]) {
         
         if ([self isNonnullString:dbTable]) {
             
             // 数据库队列
-            self.databaseQueue = [GQHEncryptDatabaseQueue databaseQueueWithPath:databasePath encryptKey:dbEncryptKey];
+            self.databaseQueue = [SeedEncryptDatabaseQueue s_databaseQueueWithPath:databasePath encryptKey:dbEncryptKey];
             [self.databaseQueue inDatabase:^(FMDatabase * _Nonnull db) {
                 
                 if ([db tableExists:dbTable]) {
@@ -840,7 +859,7 @@ static GQHDatabaseManager *manager = nil;
     return [models copy];
 }
 
-//MARK:SQLite
+#pragma mark - SQLite
 /// SQL语句-创建数据表
 /// @param tableName 数据表名
 - (NSString *)sql_createTable:(NSString *)tableName model:(id)model {
@@ -1081,7 +1100,7 @@ static GQHDatabaseManager *manager = nil;
     }
 }
 
-#pragma mark - PrivateMethod
+#pragma mark - private method
 
 /// 是否是非空字符串
 /// @param string 字符串

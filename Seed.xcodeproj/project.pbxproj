@@ -13,11 +13,11 @@
 		046AAE582398BF1C009C64C5 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 046AAE562398BF1C009C64C5 /* Main.storyboard */; };
 		046AAE5B2398BF1C009C64C5 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 046AAE5A2398BF1C009C64C5 /* main.m */; };
 		046AAE632398C01B009C64C5 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 046AAE622398C01B009C64C5 /* libsqlite3.tbd */; };
-		046AAE672398D902009C64C5 /* GQHDatabaseManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 046AAE652398D902009C64C5 /* GQHDatabaseManager.m */; };
 		046AAE6A2398DAAE009C64C5 /* GQHOrderModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 046AAE692398DAAE009C64C5 /* GQHOrderModel.m */; };
 		046AAE6D2398DAC1009C64C5 /* GQHProductModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 046AAE6C2398DAC1009C64C5 /* GQHProductModel.m */; };
-		04B72E30239F363A00CCBF17 /* GQHEncryptDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 04B72E2F239F363A00CCBF17 /* GQHEncryptDatabase.m */; };
-		04B72E33239F404200CCBF17 /* GQHEncryptDatabaseQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 04B72E32239F404200CCBF17 /* GQHEncryptDatabaseQueue.m */; };
+		3FCC2C9D2560FDDD001804E2 /* SeedEncryptDatabaseQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FCC2C9C2560FDDD001804E2 /* SeedEncryptDatabaseQueue.m */; };
+		3FCC2CA12560FDF8001804E2 /* SeedEncryptDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FCC2CA02560FDF8001804E2 /* SeedEncryptDatabase.m */; };
+		3FCC2CAA2561001B001804E2 /* SeedDatabaseManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FCC2CA92561001B001804E2 /* SeedDatabaseManager.m */; };
 		F3E3FA3727F2BDB4DE372F2F /* libPods-Seed.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8EC328076E17A593A5F5101E /* libPods-Seed.a */; };
 /* End PBXBuildFile section */
 
@@ -33,16 +33,16 @@
 		046AAE5A2398BF1C009C64C5 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		046AAE5C2398BF1C009C64C5 /* Seed.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Seed.entitlements; sourceTree = "<group>"; };
 		046AAE622398C01B009C64C5 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
-		046AAE652398D902009C64C5 /* GQHDatabaseManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GQHDatabaseManager.m; sourceTree = "<group>"; };
-		046AAE662398D902009C64C5 /* GQHDatabaseManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GQHDatabaseManager.h; sourceTree = "<group>"; };
 		046AAE682398DAAE009C64C5 /* GQHOrderModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GQHOrderModel.h; sourceTree = "<group>"; };
 		046AAE692398DAAE009C64C5 /* GQHOrderModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GQHOrderModel.m; sourceTree = "<group>"; };
 		046AAE6B2398DAC1009C64C5 /* GQHProductModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GQHProductModel.h; sourceTree = "<group>"; };
 		046AAE6C2398DAC1009C64C5 /* GQHProductModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GQHProductModel.m; sourceTree = "<group>"; };
-		04B72E2E239F363A00CCBF17 /* GQHEncryptDatabase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GQHEncryptDatabase.h; sourceTree = "<group>"; };
-		04B72E2F239F363A00CCBF17 /* GQHEncryptDatabase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GQHEncryptDatabase.m; sourceTree = "<group>"; };
-		04B72E31239F404200CCBF17 /* GQHEncryptDatabaseQueue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GQHEncryptDatabaseQueue.h; sourceTree = "<group>"; };
-		04B72E32239F404200CCBF17 /* GQHEncryptDatabaseQueue.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GQHEncryptDatabaseQueue.m; sourceTree = "<group>"; };
+		3FCC2C9B2560FDDD001804E2 /* SeedEncryptDatabaseQueue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SeedEncryptDatabaseQueue.h; sourceTree = "<group>"; };
+		3FCC2C9C2560FDDD001804E2 /* SeedEncryptDatabaseQueue.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SeedEncryptDatabaseQueue.m; sourceTree = "<group>"; };
+		3FCC2C9F2560FDF8001804E2 /* SeedEncryptDatabase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SeedEncryptDatabase.h; sourceTree = "<group>"; };
+		3FCC2CA02560FDF8001804E2 /* SeedEncryptDatabase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SeedEncryptDatabase.m; sourceTree = "<group>"; };
+		3FCC2CA82561001B001804E2 /* SeedDatabaseManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SeedDatabaseManager.h; sourceTree = "<group>"; };
+		3FCC2CA92561001B001804E2 /* SeedDatabaseManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SeedDatabaseManager.m; sourceTree = "<group>"; };
 		8EC328076E17A593A5F5101E /* libPods-Seed.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Seed.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		99BBC5E1A622097CAE2AFC46 /* Pods-Seed.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Seed.release.xcconfig"; path = "Target Support Files/Pods-Seed/Pods-Seed.release.xcconfig"; sourceTree = "<group>"; };
 		B3C8C499C62A4C82483D8C93 /* Pods-Seed.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Seed.debug.xcconfig"; path = "Target Support Files/Pods-Seed/Pods-Seed.debug.xcconfig"; sourceTree = "<group>"; };
@@ -87,7 +87,7 @@
 				046AAE512398BEF9009C64C5 /* ViewController.h */,
 				046AAE522398BEF9009C64C5 /* ViewController.m */,
 				046AAE6E2398DAC6009C64C5 /* Model */,
-				046AAE642398D902009C64C5 /* GQHDatabaseManager */,
+				046AAE642398D902009C64C5 /* SeedDatabaseManager */,
 				046AAE542398BF1B009C64C5 /* Assets.xcassets */,
 				046AAE562398BF1C009C64C5 /* Main.storyboard */,
 				046AAE592398BF1C009C64C5 /* Info.plist */,
@@ -97,17 +97,17 @@
 			path = Seed;
 			sourceTree = "<group>";
 		};
-		046AAE642398D902009C64C5 /* GQHDatabaseManager */ = {
+		046AAE642398D902009C64C5 /* SeedDatabaseManager */ = {
 			isa = PBXGroup;
 			children = (
-				046AAE662398D902009C64C5 /* GQHDatabaseManager.h */,
-				046AAE652398D902009C64C5 /* GQHDatabaseManager.m */,
-				04B72E2E239F363A00CCBF17 /* GQHEncryptDatabase.h */,
-				04B72E2F239F363A00CCBF17 /* GQHEncryptDatabase.m */,
-				04B72E31239F404200CCBF17 /* GQHEncryptDatabaseQueue.h */,
-				04B72E32239F404200CCBF17 /* GQHEncryptDatabaseQueue.m */,
+				3FCC2CA82561001B001804E2 /* SeedDatabaseManager.h */,
+				3FCC2CA92561001B001804E2 /* SeedDatabaseManager.m */,
+				3FCC2C9B2560FDDD001804E2 /* SeedEncryptDatabaseQueue.h */,
+				3FCC2C9C2560FDDD001804E2 /* SeedEncryptDatabaseQueue.m */,
+				3FCC2C9F2560FDF8001804E2 /* SeedEncryptDatabase.h */,
+				3FCC2CA02560FDF8001804E2 /* SeedEncryptDatabase.m */,
 			);
-			path = GQHDatabaseManager;
+			path = SeedDatabaseManager;
 			sourceTree = SOURCE_ROOT;
 		};
 		046AAE6E2398DAC6009C64C5 /* Model */ = {
@@ -166,7 +166,7 @@
 		046AAE432398BEF8009C64C5 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1150;
+				LastUpgradeCheck = 1220;
 				ORGANIZATIONNAME = GuanQinghao;
 				TargetAttributes = {
 					046AAE4A2398BEF9009C64C5 = {
@@ -235,13 +235,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				046AAE532398BEF9009C64C5 /* ViewController.m in Sources */,
-				04B72E30239F363A00CCBF17 /* GQHEncryptDatabase.m in Sources */,
 				046AAE5B2398BF1C009C64C5 /* main.m in Sources */,
-				04B72E33239F404200CCBF17 /* GQHEncryptDatabaseQueue.m in Sources */,
+				3FCC2CA12560FDF8001804E2 /* SeedEncryptDatabase.m in Sources */,
 				046AAE6D2398DAC1009C64C5 /* GQHProductModel.m in Sources */,
+				3FCC2CAA2561001B001804E2 /* SeedDatabaseManager.m in Sources */,
+				3FCC2C9D2560FDDD001804E2 /* SeedEncryptDatabaseQueue.m in Sources */,
 				046AAE6A2398DAAE009C64C5 /* GQHOrderModel.m in Sources */,
 				046AAE502398BEF9009C64C5 /* AppDelegate.m in Sources */,
-				046AAE672398D902009C64C5 /* GQHDatabaseManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -285,6 +285,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -343,6 +344,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;

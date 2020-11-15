@@ -1,13 +1,13 @@
 //
-//  GQHEncryptDatabaseQueue.m
+//  SeedEncryptDatabaseQueue.m
 //  Seed
 //
-//  Created by Mac on 2019/12/10.
-//  Copyright © 2019 GuanQinghao. All rights reserved.
+//  Created by Hao on 2020/11/15.
+//  Copyright © 2020 GuanQinghao. All rights reserved.
 //
 
-#import "GQHEncryptDatabaseQueue.h"
-#import "GQHEncryptDatabase.h"
+#import "SeedEncryptDatabaseQueue.h"
+#import "SeedEncryptDatabase.h"
 
 #if FMDB_SQLITE_STANDALONE
 #import <sqlite3/sqlite3.h>
@@ -17,8 +17,7 @@
 
 
 static const void * const kDispatchQueueSpecificKey = &kDispatchQueueSpecificKey;
-
-@interface GQHEncryptDatabaseQueue () {
+@interface SeedEncryptDatabaseQueue () {
     
     // 队列
     dispatch_queue_t _queue;
@@ -30,7 +29,7 @@ static const void * const kDispatchQueueSpecificKey = &kDispatchQueueSpecificKey
 
 @end
 
-@implementation GQHEncryptDatabaseQueue
+@implementation SeedEncryptDatabaseQueue
 
 @synthesize path = _path;
 @synthesize openFlags = _openFlags;
@@ -38,9 +37,9 @@ static const void * const kDispatchQueueSpecificKey = &kDispatchQueueSpecificKey
 /// 加密数据库队列
 /// @param aPath 数据库路径
 /// @param encryptKey 密钥
-+ (instancetype)databaseQueueWithPath:(NSString *)aPath encryptKey:(NSString *)encryptKey {
++ (instancetype)s_databaseQueueWithPath:(NSString *)aPath encryptKey:(NSString *)encryptKey {
     
-    GQHEncryptDatabaseQueue *queue = [[self alloc] initWithPath:aPath encryptKey:encryptKey];
+    SeedEncryptDatabaseQueue *queue = [[self alloc] initWithPath:aPath encryptKey:encryptKey];
     
     FMDBAutorelease(queue);
     
@@ -93,7 +92,7 @@ static const void * const kDispatchQueueSpecificKey = &kDispatchQueueSpecificKey
 
 + (Class)databaseClass {
     
-    return [GQHEncryptDatabase class];
+    return [SeedEncryptDatabase class];
 }
 
 - (FMDatabase*)database {
