@@ -349,6 +349,96 @@ static NSString * const kDatabasePrimaryKey = @"db_pk_id";
     return tableNames.copy;
 }
 
+/// 查询数据库中数据表的记录总数
+/// @param database 数据库结构体
+- (NSInteger)s_totalNumberInDatabase:(SeedDatabase)database {
+    
+    // 记录总数
+    __block NSInteger result = 0;
+    
+    // 数据库名
+    NSString *dbName = database.db_name;
+    // 数据库文件路径
+    NSString *dbPath = database.db_path;
+    // 数据表名
+    NSString *dbTable = database.db_table;
+    // 数据库密钥
+    NSString *dbEncryptKey = database.db_encrypt_key;
+    
+    if (![self isNonnullString:dbName]) {
+        
+        NSLog(@"%s [%d] [The database name is empty!]", __func__, __LINE__);
+        return result;
+    }
+    
+    // 数据库文件全路径
+    NSString *databasePath = [self databaseName:dbName atPath:dbPath];
+    NSLog(@"The database path:%@",databasePath);
+    if ([[NSFileManager defaultManager] fileExistsAtPath:databasePath]) {
+        
+        // 数据库队列
+        self.databaseQueue = [SeedEncryptDatabaseQueue s_databaseQueueWithPath:databasePath encryptKey:dbEncryptKey];
+        [self.databaseQueue inDatabase:^(FMDatabase * _Nonnull db) {
+            
+            // 数据表名
+            NSMutableArray<NSString *> *tableNames = [NSMutableArray array];
+            
+            // 查询数据库所有数据表名
+            NSString *tablesSQL = @"SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name;";
+            NSLog(@"SQL:%@",tablesSQL);
+            FMResultSet *resultSet = [db executeQuery: tablesSQL];
+            while ([resultSet next]) {
+                
+                [[resultSet resultDictionary] enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+                    
+                    [tableNames addObject:obj];
+                }];
+            }
+            
+            if ([self isNonnullString:dbTable]) {
+                
+                // 数据库包含数据表
+                if ([tableNames containsObject:dbTable]) {
+                    
+                    // 查询数据表记录条数
+                    NSString *countSQL = [NSString stringWithFormat:@"SELECT count(%@) FROM '%@';", kDatabasePrimaryKey,dbTable];
+                    NSLog(@"SQL:%@",countSQL);
+                    FMResultSet *resultSet = [db executeQuery:countSQL];
+                    while ([resultSet next]) {
+                        
+                        [[resultSet resultDictionary] enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+                            
+                            result += [obj integerValue];
+                        }];
+                    }
+                }
+            } else {
+                
+                // 查询所有数据表的记录总数
+                [tableNames enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                    
+                    // 查询数据表记录条数
+                    NSString *countSQL = [NSString stringWithFormat:@"SELECT count(%@) FROM '%@';", kDatabasePrimaryKey,obj];
+                    NSLog(@"SQL:%@",countSQL);
+                    FMResultSet *resultSet = [db executeQuery:countSQL];
+                    while ([resultSet next]) {
+                        
+                        [[resultSet resultDictionary] enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+                            
+                            result += [obj integerValue];
+                        }];
+                    }
+                }];
+            }
+        }];
+    } else {
+        
+        NSLog(@"%s [%d] [The database file does not exist: %@!]", __func__, __LINE__,databasePath);
+    }
+    
+    return result;
+}
+
 /// 数据库文件全路径
 /// @param name 数据库名
 /// @param path 数据库文件路径

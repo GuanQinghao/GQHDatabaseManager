@@ -84,6 +84,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param database 数据库结构体
 - (nullable NSArray<NSString *> *)s_allTableNamesInDatabase:(SeedDatabase)database;
 
+/// 查询数据库中数据表的记录总数
+/// @param database 数据库结构体
+- (NSInteger)s_totalNumberInDatabase:(SeedDatabase)database;
 
 #pragma mark ----------------------------- <CRUD> -----------------------------
 
