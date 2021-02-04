@@ -14,15 +14,15 @@ NS_ASSUME_NONNULL_BEGIN
 /// 数据库结构体
 typedef struct _SeedDatabase {
     
-    // 数据库绝对路径, 默认为Documents文件夹
+    /// 数据库绝对路径, 默认为Documents文件夹
     NSString *db_path;
-    // 数据库名
+    /// 数据库名
     NSString *db_name;
-    // 数据表名
+    /// 数据表名
     NSString *db_table;
-    // 数据库密钥, 默认为空表示不加密
+    /// 数据库密钥, 默认为空表示不加密
     NSString *db_encrypt_key;
-    // 存储的模型类
+    /// 存储的模型类
     Class db_cls;
 } SeedDatabase;
 
@@ -34,13 +34,13 @@ NS_ASSUME_NONNULL_BEGIN
 /// 数据库操作条件结构体
 typedef struct _SeedSQLiteCondition {
     
-    // 数据库结构体
+    /// 数据库结构体
     SeedDatabase db_database;
-    // 页大小
+    /// 页大小
     NSInteger db_size;
-    // 页码
+    /// 页码
     NSInteger db_page;
-    // 查询条件
+    /// 查询条件
     NSDictionary *db_query;
 } SeedSQLiteCondition;
 
