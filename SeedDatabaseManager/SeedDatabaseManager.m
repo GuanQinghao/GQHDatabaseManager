@@ -7,10 +7,10 @@
 //
 
 #import "SeedDatabaseManager.h"
-#import <objc/message.h>
-#import <FMDB/FMDB.h>
 #import "SeedEncryptDatabase.h"
 #import "SeedEncryptDatabaseQueue.h"
+#import <objc/message.h>
+#import <FMDB/FMDB.h>
 
 
 #ifdef DEBUG
@@ -35,7 +35,7 @@ static NSString * const kDatabasePrimaryKey = @"db_pk_id";
 @implementation SeedDatabaseManager
 
 /// 数据库管理单例
-+ (instancetype)s_sharedDatabaseManager {
++ (instancetype)s_manager {
     
     /// 数据库管理单例
     static SeedDatabaseManager *manager = nil;
@@ -50,7 +50,7 @@ static NSString * const kDatabasePrimaryKey = @"db_pk_id";
 
 + (instancetype)allocWithZone:(struct _NSZone *)zone {
     
-    return [self s_sharedDatabaseManager];
+    return [self s_manager];
 }
 
 

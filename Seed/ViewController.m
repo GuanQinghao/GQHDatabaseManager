@@ -62,7 +62,7 @@ static NSString * const kDatabaseTableProduct = @"product";
     
 //
 //    // 查询数据库文件路径
-//    NSLog(@"%@",[[SeedDatabaseManager s_sharedDatabaseManager] qh_filePathWithDatabaseName:kDatabaseName]);
+//    NSLog(@"%@",[[SeedDatabaseManager s_manager] qh_filePathWithDatabaseName:kDatabaseName]);
 //
 //    // 删除数据库文件
 //    [self removeDatabase];
@@ -120,24 +120,24 @@ static NSString * const kDatabaseTableProduct = @"product";
     database.db_cls = GQHOrderModel.class;
     
     // 创建数据库文件
-    if ([[SeedDatabaseManager s_sharedDatabaseManager] s_createDatabase:database]) {
+    if ([[SeedDatabaseManager s_manager] s_createDatabase:database]) {
         NSLog(@"创建数据库成功");
     } else {
         NSLog(@"创建数据库失败");
     }
     
     // 数据库文件路径(Documents文件夹下, 已存在的数据库)
-    NSLog(@"%@",[[SeedDatabaseManager s_sharedDatabaseManager] s_filePathWithDatabaseName:kDatabaseName]);
+    NSLog(@"%@",[[SeedDatabaseManager s_manager] s_filePathWithDatabaseName:kDatabaseName]);
     
     // 删除数据库文件先清空表再删除表
-    if ([[SeedDatabaseManager s_sharedDatabaseManager] s_dropDatabase:database]) {
+    if ([[SeedDatabaseManager s_manager] s_dropDatabase:database]) {
         NSLog(@"删除数据表成功");
     } else {
         NSLog(@"删除数据表失败");
     }
     
     // 删除数据库文件
-    if ([[SeedDatabaseManager s_sharedDatabaseManager] s_removeDatabase:database]) {
+    if ([[SeedDatabaseManager s_manager] s_removeDatabase:database]) {
         NSLog(@"删除数据库成功");
     } else {
         NSLog(@"删除数据库失败");
@@ -157,13 +157,13 @@ static NSString * const kDatabaseTableProduct = @"product";
     database.db_cls = [GQHOrderModel class];
     
     // 创建数据表
-    [[SeedDatabaseManager s_sharedDatabaseManager] s_createDatabase:database];
+    [[SeedDatabaseManager s_manager] s_createDatabase:database];
     
     // Product表
     database.db_table = kDatabaseTableProduct;
     database.db_cls = [GQHProductModel class];
     
-    [[SeedDatabaseManager s_sharedDatabaseManager] s_createDatabase:database];
+    [[SeedDatabaseManager s_manager] s_createDatabase:database];
 }
 
 - (void)queryDatabaseTableNames {
@@ -172,7 +172,7 @@ static NSString * const kDatabaseTableProduct = @"product";
     SeedDatabase database;
     database.db_name = kDatabaseName;
     
-    NSArray *tableNames = [[SeedDatabaseManager s_sharedDatabaseManager] s_allTableNamesInDatabase:database];
+    NSArray *tableNames = [[SeedDatabaseManager s_manager] s_allTableNamesInDatabase:database];
     NSLog(@"%@",tableNames);
 }
 
@@ -183,7 +183,7 @@ static NSString * const kDatabaseTableProduct = @"product";
     database.db_name = kDatabaseName;
     database.db_table = kDatabaseTableProduct;
     
-    [[SeedDatabaseManager s_sharedDatabaseManager] s_truncateDatabase:database];
+    [[SeedDatabaseManager s_manager] s_truncateDatabase:database];
 }
 
 - (void)removeDatabaseTable {
@@ -193,7 +193,7 @@ static NSString * const kDatabaseTableProduct = @"product";
     database.db_name = kDatabaseName;
     database.db_table = kDatabaseTableProduct;
     
-    [[SeedDatabaseManager s_sharedDatabaseManager] s_dropDatabase:database];
+    [[SeedDatabaseManager s_manager] s_dropDatabase:database];
 }
 
 /// 插入模型
@@ -218,7 +218,7 @@ static NSString * const kDatabaseTableProduct = @"product";
         order.qh_mobile = @"手机号";
         order.qh_count = @(count);
         order.qh_price = @(399.15f);
-        [SeedDatabaseManager.s_sharedDatabaseManager s_insertData:order intoDatabase:database];
+        [SeedDatabaseManager.s_manager s_insertData:order intoDatabase:database];
         
         
 //
@@ -231,14 +231,14 @@ static NSString * const kDatabaseTableProduct = @"product";
 //        product.qh_name = @"商品名称";
 //        product.qh_count = @(999);
 //        product.qh_price = @(34.00f);
-//        [[SeedDatabaseManager s_sharedDatabaseManager] qh_insertData:product intoDatabase:database];
+//        [[SeedDatabaseManager s_manager] qh_insertData:product intoDatabase:database];
 //
 //
 //        database.db_table = kDatabaseTableOrder;
 //
 //        order.qh_products = @[product];
 //
-//        [[SeedDatabaseManager s_sharedDatabaseManager] qh_insertData:order intoDatabase:database];
+//        [[SeedDatabaseManager s_manager] qh_insertData:order intoDatabase:database];
 //
 //        GQHOrderModel *another = [[GQHOrderModel alloc] init];
 //        another.qh_id = @"订单id";
@@ -249,7 +249,7 @@ static NSString * const kDatabaseTableProduct = @"product";
 //        another.qh_price = @(399.15f);
 //        another.qh_products = @[product];
 //
-//        [[SeedDatabaseManager s_sharedDatabaseManager] qh_insertData:another intoDatabase:database];
+//        [[SeedDatabaseManager s_manager] qh_insertData:another intoDatabase:database];
     }
 }
 
@@ -266,7 +266,7 @@ static NSString * const kDatabaseTableProduct = @"product";
     condition.db_page = 1;
     condition.db_size = 100;
     
-    NSLog(@"%@",[[SeedDatabaseManager s_sharedDatabaseManager] s_fuzzyQueryDataWith:condition]);
+    NSLog(@"%@",[[SeedDatabaseManager s_manager] s_fuzzyQueryDataWith:condition]);
 }
 
 - (void)deleteData {
@@ -279,7 +279,7 @@ static NSString * const kDatabaseTableProduct = @"product";
     SeedSQLiteCondition condition;
     condition.db_database = database;
     condition.db_query = @{@"qh_count":@"6"};
-    [[SeedDatabaseManager s_sharedDatabaseManager] s_deleteDataWith:condition];
+    [[SeedDatabaseManager s_manager] s_deleteDataWith:condition];
 }
 
 - (void)updateData {
@@ -295,7 +295,7 @@ static NSString * const kDatabaseTableProduct = @"product";
     condition.db_page = 1;
     condition.db_size = 100;
     
-    NSArray<GQHOrderModel *> *result = [[SeedDatabaseManager s_sharedDatabaseManager] s_queryDataWith:condition];
+    NSArray<GQHOrderModel *> *result = [[SeedDatabaseManager s_manager] s_queryDataWith:condition];
     
     [result enumerateObjectsUsingBlock:^(GQHOrderModel * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         
@@ -303,7 +303,7 @@ static NSString * const kDatabaseTableProduct = @"product";
         model.db_pk_id = obj.db_pk_id;
         model.qh_count = @(60);
         model.qh_price = @(299.99);
-        [SeedDatabaseManager.s_sharedDatabaseManager s_updateData:model inDatabase:database];
+        [SeedDatabaseManager.s_manager s_updateData:model inDatabase:database];
     }];
 }
 

@@ -52,10 +52,10 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SeedDatabaseManager : NSObject
 
 /// 数据库管理单例
-@property (class, readonly, strong) SeedDatabaseManager *s_sharedDatabaseManager;
+@property (class, readonly, strong) SeedDatabaseManager *s_manager;
 
 /// 数据库管理单例
-+ (instancetype)s_sharedDatabaseManager;
++ (instancetype)s_manager;
 
 
 #pragma mark ----------------------------- <数据库> -----------------------------

@@ -18,7 +18,6 @@
 
 @end
 
-
 @implementation SeedEncryptDatabase
 
 /// 创建加密数据库
@@ -42,7 +41,7 @@
     return self;
 }
 
-#pragma mark - Override
+#pragma mark - override
 
 - (BOOL)open {
     
